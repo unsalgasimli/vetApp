@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_reservations"
+        android:title="Reservations"
+            android:icon="@drawable/reservation" />
+    <item
+        android:id="@+id/nav_pets"
+        android:title="Pets"
+        android:icon="@drawable/pet" />
+    <item
+        android:id="@+id/nav_patient_data"
+        android:title="User Data"
+        android:icon="@drawable/patient" />
+</menu>

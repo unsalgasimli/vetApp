@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+ <androidx.constraintlayout.widget.ConstraintLayout
+     android:id="@+id/constraintLayout"
+     android:layout_width="match_parent"
+     android:layout_height="match_parent"
+     >
+
+        <!-- Date selection TextView -->
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Select Date"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            android:layout_marginTop="20dp"
+            app:layout_constraintVertical_bias="0.1"
+            />
+
+        <!-- Time selection EditText -->
+        <EditText
+            android:id="@+id/etTime"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:hint="Select Time"
+            android:focusable="false"
+            android:clickable="true"
+            app:layout_constraintStart_toStartOf="@+id/tvDate"
+            app:layout_constraintEnd_toEndOf="@+id/tvDate"
+            app:layout_constraintTop_toBottomOf="@+id/tvDate"
+            android:layout_marginTop="20dp"
+            />
+
+        <!-- Doctor selection Spinner -->
+        <TextView
+            android:id="@+id/doctorTxtView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Select Doctor:"
+            app:layout_constraintStart_toStartOf="@+id/etTime"
+            app:layout_constraintEnd_toEndOf="@+id/etTime"
+            app:layout_constraintTop_toBottomOf="@+id/etTime"
+            android:layout_marginTop="20dp"
+            />
+        <Spinner
+            android:id="@+id/spinnerDoctor"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@+id/doctorTxtView"
+            app:layout_constraintEnd_toEndOf="@+id/doctorTxtView"
+            app:layout_constraintTop_toBottomOf="@+id/doctorTxtView"
+            />
+
+        <!-- Appointment Type Spinner -->
+        <TextView
+            android:id="@+id/appTypeTxtView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Appointment Type:"
+            app:layout_constraintStart_toStartOf="@+id/spinnerDoctor"
+            app:layout_constraintEnd_toEndOf="@+id/spinnerDoctor"
+            app:layout_constraintTop_toBottomOf="@+id/spinnerDoctor"
+            android:layout_marginTop="20dp"
+            />
+        <Spinner
+            android:id="@+id/spinnerAppointmentType"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintStart_toStartOf="@+id/appTypeTxtView"
+            app:layout_constraintEnd_toEndOf="@+id/appTypeTxtView"
+            app:layout_constraintTop_toBottomOf="@+id/appTypeTxtView"
+            android:layout_marginTop="20dp"
+            />
+
+        <!-- Info EditText -->
+        <TextView
+            android:id="@+id/infoTxtView"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Info:"
+            app:layout_constraintStart_toStartOf="@+id/spinnerAppointmentType"
+            app:layout_constraintEnd_toEndOf="@+id/spinnerAppointmentType"
+            app:layout_constraintTop_toBottomOf="@+id/spinnerAppointmentType"
+            android:layout_marginTop="20dp"
+            />
+        <EditText
+            android:id="@+id/etInfo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Enter info"
+            app:layout_constraintStart_toStartOf="@+id/infoTxtView"
+            app:layout_constraintEnd_toEndOf="@+id/infoTxtView"
+            app:layout_constraintTop_toBottomOf="@+id/infoTxtView"
+            android:layout_marginTop="20dp"
+             />
+
+
+ </androidx.constraintlayout.widget.ConstraintLayout>
+
+
+</ScrollView>

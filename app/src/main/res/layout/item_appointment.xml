@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <TextView
+            android:id="@+id/tvDoc"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Doc:" />
+
+        <TextView
+            android:id="@+id/tvPat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Patient:" />
+
+        <TextView
+            android:id="@+id/tvPet"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Pet:" />
+
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Date:" />
+
+        <TextView
+            android:id="@+id/tvTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Time:" />
+
+        <TextView
+            android:id="@+id/tvAppointmentType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Appointment Type:" />
+
+        <TextView
+            android:id="@+id/tvInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Info:" />
+
+        <TextView
+            android:id="@+id/tvStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Status:" />
+    </LinearLayout>
+</com.google.android.material.card.MaterialCardView>

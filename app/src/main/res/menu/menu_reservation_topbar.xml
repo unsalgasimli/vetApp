@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/action_appointment"
+        android:title="Appointment"
+        android:showAsAction="always" />
+    <item
+        android:id="@+id/action_history"
+        android:title="History"
+        android:showAsAction="always" />
+    <item
+        android:id="@+id/action_info"
+        android:title="Info"
+        android:showAsAction="always" />
+    <item
+        android:id="@+id/action_logout"
+        android:title="Log Out"
+        android:showAsAction="always" />
+</menu>

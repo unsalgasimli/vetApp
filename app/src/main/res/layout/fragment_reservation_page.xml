@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/fragment_reservation_page"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <!-- Filtering Section -->
+    <LinearLayout
+        android:id="@+id/llFilters"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="8dp">
+
+        <!-- Type Filter Spinner -->
+        <Spinner
+            android:id="@+id/spinnerFilter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:prompt="@string/filter_by_type"
+            android:layout_marginTop="20dp"
+            />
+
+        <!-- Date Range Filters -->
+        <EditText
+            android:id="@+id/etFromDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="From Date (yyyy-MM-dd)"
+            android:focusable="false" />
+        <EditText
+            android:id="@+id/etToDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="To Date (yyyy-MM-dd)"
+            android:focusable="false" />
+
+        <!-- Pet Filter Spinner -->
+        <Spinner
+            android:id="@+id/spinnerPetFilter"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:prompt="@string/filter_by_pet" />
+    </LinearLayout>
+
+    <!-- RecyclerView for displaying filtered reservations -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerReservations"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="8dp" />
+
+    <!-- Two FABs for adding items -->
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddAppointment"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|start"
+        android:layout_margin="16dp"
+        android:src="@drawable/mcv_action_next"
+        android:contentDescription="Add Appointment" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fabAddPrescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@drawable/mcv_action_previous"
+        android:contentDescription="Add Prescription" />
+
+</LinearLayout>
