@@ -12,11 +12,13 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.timepicker.MaterialTimePicker;
 import com.google.android.material.timepicker.TimeFormat;
@@ -28,6 +30,11 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.unsalGasimliApplicationsNSUG.vetapp.data.Appointment;
+import com.unsalGasimliApplicationsNSUG.vetapp.data.Prescription;
+import com.unsalGasimliApplicationsNSUG.vetapp.data.ReservationItem;
+import com.unsalGasimliApplicationsNSUG.vetapp.data.ReservationType;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -46,7 +53,6 @@ public class ReservationPageFragment extends Fragment {
 
     // Firestore and adapter
     private FirebaseFirestore db;
-    // This list holds all reservations fetched from Firebase.
     private List<ReservationItem> allItems = new ArrayList<>();
     private ReservationAdapter adapter;
 
@@ -70,153 +76,181 @@ public class ReservationPageFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
 
         // Initialize filtering UI components
-        spinnerFilter = view.findViewById(R.id.spinnerFilter);
+        spinnerFilter    = view.findViewById(R.id.spinnerFilter);
         spinnerPetFilter = view.findViewById(R.id.spinnerPetFilter);
-        etFromDate = view.findViewById(R.id.etFromDate);
-        etToDate = view.findViewById(R.id.etToDate);
+        etFromDate       = view.findViewById(R.id.etFromDate);
+        etToDate         = view.findViewById(R.id.etToDate);
 
-        // Set up RecyclerView and adapter
+        // RecyclerView + Adapter
         recyclerReservations = view.findViewById(R.id.recyclerReservations);
         recyclerReservations.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new ReservationAdapter(new ArrayList<>(), (ReservationItem item, int position) -> {
-            // Use the enum from the base class to decide which dialog to show.
-            if (item.getAppointmentType() == ReservationType.APPOINTMENT) {
+        adapter = new ReservationAdapter(new ArrayList<>(), (item, position) -> {
+            if (item.getReservationType() == ReservationType.APPOINTMENT) {
                 showAppointmentDialog((Appointment) item, position);
-            } else if (item.getAppointmentType() == ReservationType.PRESCRIPTION) {
+            } else {
                 showPrescriptionDialog((Prescription) item, position);
             }
         });
         recyclerReservations.setAdapter(adapter);
 
-        // Set up spinnerFilter adapter with options "All", "APPOINTMENT", "PRESCRIPTION"
+        // ---- filter by type ----
         String[] filterOptions = {"All", "APPOINTMENT", "PRESCRIPTION"};
-        ArrayAdapter<String> filterAdapter = new ArrayAdapter<>(getContext(),
+        ArrayAdapter<String> typeAdapter = new ArrayAdapter<>(getContext(),
                 android.R.layout.simple_spinner_item, filterOptions);
-        filterAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinnerFilter.setAdapter(filterAdapter);
+        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerFilter.setAdapter(typeAdapter);
         spinnerFilter.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> parent, View spinnerView, int position, long id) {
-                filterType = filterOptions[position];
+            @Override public void onItemSelected(AdapterView<?> parent, View v, int pos, long id) {
+                filterType = filterOptions[pos];
                 applyFilter();
             }
-            @Override
-            public void onNothingSelected(AdapterView<?> parent) { }
+            @Override public void onNothingSelected(AdapterView<?> parent) { }
         });
 
-        // (Optional) Set up spinnerPetFilter if you wish to filter by pet.
+        // ---- (optional) filter by pet ----
+        // you can populate spinnerPetFilter similarly by querying "users/{uid}/pets"
 
-        // Fetch reservations for the current user from Firebase
+        // ---- date pickers (you can wire up DatePickerDialogs to fill etFromDate & etToDate) ----
+        // etFromDate.setOnClickListener(...) etc.
+
+        // Fetch current user's reservations
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         if (currentUser != null) {
             String uid = currentUser.getUid();
-            DocumentReference userDocRef = db.collection("users").document(uid);
-            userDocRef.get().addOnSuccessListener(documentSnapshot -> {
-                if (documentSnapshot.exists()) {
-                    String firstName = documentSnapshot.getString("firstName");
-                    String lastName = documentSnapshot.getString("lastName");
-                    String fullName = firstName + " " + lastName;
-                    Log.d("GetFullName", "User's full name: " + fullName);
-
-                    db.collection("reservations")
-                            .whereEqualTo("patFullName", fullName)
-                            .addSnapshotListener((QuerySnapshot querySnapshot, FirebaseFirestoreException error) -> {
-                                if (error != null || querySnapshot == null) return;
-                                // Update the global list (avoid shadowing)
-                                allItems = new ArrayList<>();
-                                for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
-                                    String typeStr = doc.getString("reservationType");
-                                    ReservationItem item = null;
-                                    if ("APPOINTMENT".equals(typeStr)) {
-                                        item = doc.toObject(Appointment.class);
-                                    } else if ("PRESCRIPTION".equals(typeStr)) {
-                                        item = doc.toObject(Prescription.class);
+            db.collection("users").document(uid)
+                    .get()
+                    .addOnSuccessListener(doc -> {
+                        if (!doc.exists()) return;
+                        String fullName = doc.getString("firstName") + " " + doc.getString("lastName");
+                        db.collection("reservations")
+                                .whereEqualTo("patFullName", fullName)
+                                .addSnapshotListener((qs, err) -> {
+                                    if (err != null || qs == null) return;
+                                    allItems.clear();
+                                    for (DocumentSnapshot d : qs.getDocuments()) {
+                                        String typeStr = d.getString("type");               // ← read "type"
+                                        ReservationItem it = null;
+                                        if ("APPOINTMENT".equals(typeStr)) {
+                                            it = d.toObject(Appointment.class);
+                                        } else if ("PRESCRIPTION".equals(typeStr)) {
+                                            it = d.toObject(Prescription.class);
+                                        }
+                                        if (it != null) {
+                                            it.setId(d.getId());
+                                            allItems.add(it);
+                                        }
                                     }
-                                    if (item != null) {
-                                        item.setId(doc.getId());
-                                        allItems.add(item);
-                                    }
-                                }
-                                // Optionally sort by timestamp (nearest first)
-                                Collections.sort(allItems, (o1, o2) -> o1.getTimestamp().compareTo(o2.getTimestamp()));
-                                applyFilter();
-                            });
-                } else {
-                    Log.d("GetFullName", "No user document found for UID: " + uid);
-                }
-            }).addOnFailureListener(e -> {
-                Log.e("GetFullName", "Error fetching user document", e);
-            });
-        } else {
-            Log.d("GetFullName", "No user is currently logged in.");
+                                    // sort by timestamp
+                                    Collections.sort(allItems, (a, b) ->
+                                            a.getTimestamp().compareTo(b.getTimestamp()));
+                                    applyFilter();
+                                });
+                    })
+                    .addOnFailureListener(e -> Log.e("ReservationPage", "Failed to load user", e));
         }
 
-        // Set up FAB listeners to add new appointments or prescriptions
-        fabAddAppointment = view.findViewById(R.id.fabAddAppointment);
-        fabAddPrescription = view.findViewById(R.id.fabAddPrescription);
+        // FAB listeners
+        fabAddAppointment   = view.findViewById(R.id.fabAddAppointment);
+        fabAddPrescription  = view.findViewById(R.id.fabAddPrescription);
         fabAddAppointment.setOnClickListener(v -> showAppointmentDialog(null, -1));
         fabAddPrescription.setOnClickListener(v -> showPrescriptionDialog(null, -1));
     }
 
-    // Filter the list of reservations based on the selected filterType, pet, and date range
     private void applyFilter() {
         List<ReservationItem> filtered = new ArrayList<>();
         for (ReservationItem item : allItems) {
-            // Filter by type using enum comparisons
+            // type filter
             if (!"All".equals(filterType)) {
-                if ("APPOINTMENT".equals(filterType) && item.getAppointmentType() != ReservationType.APPOINTMENT)
-                    continue;
-                if ("PRESCRIPTION".equals(filterType) && item.getAppointmentType() != ReservationType.PRESCRIPTION)
-                    continue;
+                ReservationType rt = item.getReservationType();
+                if ("APPOINTMENT".equals(filterType) && rt != ReservationType.APPOINTMENT) continue;
+                if ("PRESCRIPTION".equals(filterType) && rt != ReservationType.PRESCRIPTION) continue;
             }
-            // Filter by pet (if implemented)
+            // pet filter
             if (!"All".equals(filterPet)) {
-                if (item.getPetName() == null || !item.getPetName().equals(filterPet))
-                    continue;
+                if (item.getPetName() == null || !item.getPetName().equals(filterPet)) continue;
             }
-            // Filter by date range: compare the item's timestamp (formatted as "yyyy-MM-dd")
-            String itemDate = DateFormat.format("yyyy-MM-dd", item.getTimestamp().toDate()).toString();
-            if (filterFromDate != null && !filterFromDate.isEmpty() && itemDate.compareTo(filterFromDate) < 0)
-                continue;
-            if (filterToDate != null && !filterToDate.isEmpty() && itemDate.compareTo(filterToDate) > 0)
-                continue;
+            // date filter
+            String itemDate = DateFormat.format("yyyy-MM-dd",
+                    item.getTimestamp().toDate()).toString();
+            if (!filterFromDate.isEmpty() && itemDate.compareTo(filterFromDate) < 0) continue;
+            if (!filterToDate.isEmpty()   && itemDate.compareTo(filterToDate)   > 0) continue;
+
             filtered.add(item);
         }
         adapter.updateData(filtered);
     }
 
-    // --- Dialog Methods ---
-    // Appointment dialog (includes doctor spinner, appointment category spinner, and MaterialTimePicker)
     private void showAppointmentDialog(@Nullable final Appointment appointment, int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_appointment, null);
+        View dialogView = getLayoutInflater().inflate(R.layout.dialog_appointment, null);
         builder.setView(dialogView);
 
+        // --- DATE & TIME SETUP (unchanged) ---
         String currentDate = DateFormat.format("yyyy-MM-dd", new Date()).toString();
-        TextView tvDate = dialogView.findViewById(R.id.tvDate);
-        tvDate.setText("Date: " + currentDate);
-
-        // Time selection using MaterialTimePicker
+        ((TextView) dialogView.findViewById(R.id.tvDate)).setText("Date: " + currentDate);
         EditText etTime = dialogView.findViewById(R.id.etTime);
         etTime.setFocusable(false);
         etTime.setOnClickListener(v -> {
-            MaterialTimePicker timePicker = new MaterialTimePicker.Builder()
+            MaterialTimePicker picker = new MaterialTimePicker.Builder()
                     .setTitleText("Select Appointment Time")
                     .setTimeFormat(TimeFormat.CLOCK_12H)
                     .build();
-            timePicker.addOnPositiveButtonClickListener(picker -> {
-                int hour = timePicker.getHour();
-                int minute = timePicker.getMinute();
-                String timeString = String.format("%02d:%02d", hour, minute);
-                etTime.setText(timeString);
+            picker.addOnPositiveButtonClickListener(p -> {
+                etTime.setText(String.format("%02d:%02d", picker.getHour(), picker.getMinute()));
             });
-            timePicker.show(getChildFragmentManager(), "TIME_PICKER");
+            picker.show(getChildFragmentManager(), "TIME_PICKER");
         });
 
-        // (Your code to set up doctor spinner and appointment category spinner goes here.)
+        // --- DOCTOR SPINNER (keep your existing code) ---
+        Spinner spinnerDoctor = dialogView.findViewById(R.id.spinnerDoctor);
+        // … your code to populate spinnerDoctor …
 
-        // Info EditText
+        // --- PET SPINNER ---
+        Spinner spinnerPet = dialogView.findViewById(R.id.spinnerPet);
+        List<String> petList = new ArrayList<>();
+        petList.add("Loading pets…");
+        ArrayAdapter<String> petAdapter = new ArrayAdapter<>(
+                getContext(),
+                android.R.layout.simple_spinner_item,
+                petList
+        );
+        petAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinnerPet.setAdapter(petAdapter);
+
+        // Fetch from Firestore
+        String uid = FirebaseAuth.getInstance().getCurrentUser().getUid();
+        db.collection("users")
+                .document(uid)
+                .collection("pets")           // make sure your collection is really named "pets"
+                .get()
+                .addOnSuccessListener(qs -> {
+                    petList.clear();
+                    for (DocumentSnapshot doc : qs.getDocuments()) {
+                        String name = doc.getString("name");
+                        if (name != null) petList.add(name);
+                    }
+                    if (petList.isEmpty()) {
+                        petList.add("No pets found");
+                    }
+                    petAdapter.notifyDataSetChanged();
+
+                    // If editing an existing appointment, select its pet:
+                    if (appointment != null && appointment.getPetName() != null) {
+                        int idx = petList.indexOf(appointment.getPetName());
+                        if (idx >= 0) spinnerPet.setSelection(idx);
+                    }
+                    Log.d("Appointments", "Loaded pets: " + petList);
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("Appointments", "Error loading pets", e);
+                    petList.clear();
+                    petList.add("Error loading pets");
+                    petAdapter.notifyDataSetChanged();
+                });
+
+        // --- APPOINTMENT TYPE SPINNER & INFO (unchanged) ---
+        Spinner spinnerAppType = dialogView.findViewById(R.id.spinnerAppointmentType);
+        // … your existing code …
         EditText etInfo = dialogView.findViewById(R.id.etInfo);
 
         if (appointment != null) {
@@ -227,66 +261,52 @@ public class ReservationPageFragment extends Fragment {
             builder.setTitle("Add Appointment");
         }
 
-        builder.setPositiveButton(appointment != null ? "Update" : "Add", (dialog, which) -> {
-            // Parse time, create/update Appointment, and update Firebase
-            // (Your existing appointment creation/update code goes here.)
+        builder.setPositiveButton(appointment != null ? "Update" : "Add", (d, w) -> {
+            // Gather selectedPet here:
+            String selectedPet = (String) spinnerPet.getSelectedItem();
+            // … then proceed to build/update your Appointment object …
         });
 
-        if (appointment != null) {
-            builder.setNeutralButton("Cancel Appointment", (dialog, which) -> {
-                appointment.setStatus("Cancelled");
-                db.collection("reservations").document(appointment.getId())
-                        .set(appointment)
-                        .addOnSuccessListener(aVoid -> { /* Appointment cancelled */ })
-                        .addOnFailureListener(e -> { /* Handle error */ });
-            });
-        }
-
-        builder.setNegativeButton("Dismiss", (dialog, which) -> dialog.dismiss());
+        // … rest of your dialog buttons (Cancel, Dismiss) …
+        builder.setNegativeButton("Dismiss", (d, w) -> d.dismiss());
         builder.show();
     }
 
-    // Prescription dialog
-    private void showPrescriptionDialog(@Nullable final Prescription prescription, int position) {
+    private void showPrescriptionDialog(@Nullable Prescription prescription, int pos) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-        LayoutInflater inflater = getLayoutInflater();
-        View dialogView = inflater.inflate(R.layout.dialog_prescription, null);
-        builder.setView(dialogView);
+        View dlg = getLayoutInflater().inflate(R.layout.dialog_prescription, null);
+        builder.setView(dlg);
 
-        String currentDate = DateFormat.format("yyyy-MM-dd", new Date()).toString();
-        TextView tvDate = dialogView.findViewById(R.id.tvDate);
-        tvDate.setText("From: " + currentDate);
+        String today = DateFormat.format("yyyy-MM-dd", new Date()).toString();
+        ((TextView) dlg.findViewById(R.id.tvDate)).setText("From: " + today);
 
-        // Set up dialog UI for prescription (date, frequency, info)
-        EditText etDateTo = dialogView.findViewById(R.id.etDateTo);
-        EditText etFrequency = dialogView.findViewById(R.id.etFrequency);
-        EditText etInfo = dialogView.findViewById(R.id.etInfo);
+        EditText etDateTo   = dlg.findViewById(R.id.etDateTo);
+        EditText etFreq     = dlg.findViewById(R.id.etFrequency);
+        EditText etInfo     = dlg.findViewById(R.id.etInfo);
 
         if (prescription != null) {
             etDateTo.setText(prescription.getDateTo());
-            etFrequency.setText(prescription.getFrequency());
+            etFreq.setText(prescription.getFrequency());
             etInfo.setText(prescription.getInfo());
             builder.setTitle("Update Prescription");
         } else {
             builder.setTitle("Add Prescription");
         }
 
-        builder.setPositiveButton(prescription != null ? "Update" : "Add", (dialog, which) -> {
-            // Parse input and create/update Prescription, then update Firebase
-            // (Your existing prescription creation/update code goes here.)
+        builder.setPositiveButton(prescription != null ? "Update" : "Add", (d, w) -> {
+            // TODO: parse fields, build or update Prescription, set .setType("PRESCRIPTION"), and save
         });
 
         if (prescription != null) {
-            builder.setNeutralButton("Cancel Prescription", (dialog, which) -> {
+            builder.setNeutralButton("Cancel Prescription", (d, w) -> {
                 prescription.setInfo("Cancelled");
-                db.collection("reservations").document(prescription.getId())
-                        .set(prescription)
-                        .addOnSuccessListener(aVoid -> { /* Prescription cancelled */ })
-                        .addOnFailureListener(e -> { /* Handle error */ });
+                db.collection("reservations")
+                        .document(prescription.getId())
+                        .set(prescription);
             });
         }
 
-        builder.setNegativeButton("Dismiss", (dialog, which) -> dialog.dismiss());
+        builder.setNegativeButton("Dismiss", (d, w) -> d.dismiss());
         builder.show();
     }
 }

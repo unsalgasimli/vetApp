@@ -1,24 +1,24 @@
+// ManagePatientFragment.java
 package com.unsalGasimliApplicationsNSUG.vetapp;
 
 import android.os.Bundle;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.Toast;
-
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.unsalGasimliApplicationsNSUG.vetapp.adapters.PatientAdapter;
+import com.unsalGasimliApplicationsNSUG.vetapp.models.Patient;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,199 +27,176 @@ import java.util.Map;
 
 public class ManagePatientFragment extends Fragment {
 
-    private EditText firstNameEditText, lastNameEditText, emailEditText,
-            phoneEditText, dobEditText, passwordEditText, confirmPasswordEditText;
-    private Button addButton, updateButton, deleteButton;
-    private RecyclerView recyclerView;
-    private UserAdapter adapter;
-    private List<User> patientList = new ArrayList<>();
-    private FirebaseFirestore db;
-
-    // To store the selected patient unique ID for update/delete operations.
-    private String selectedpatientId = null;
-
-    public ManagePatientFragment() {
-        // Required empty public constructor
-    }
+    private TextInputEditText etFirstName, etLastName, etEmail, etPhone, etDOB;
+    private MaterialButton btnAddPatient, btnUpdatePatient, btnDeletePatient;
+    private RecyclerView rvPatients;
+    private PatientAdapter adapter;
+    private List<Patient> patients = new ArrayList<>();
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private String selectedId = null;
 
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             ViewGroup container,
                              Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.fragment_admin, container, false);
+        View v = inflater.inflate(R.layout.fragment_manage_patient, container, false);
 
-        db = FirebaseFirestore.getInstance();
+        // bind
+        etFirstName      = v.findViewById(R.id.etFirstName);
+        etLastName       = v.findViewById(R.id.etLastName);
+        etEmail          = v.findViewById(R.id.etEmail);
+        etPhone          = v.findViewById(R.id.etPhone);
+        etDOB            = v.findViewById(R.id.etDOB);
+        btnAddPatient    = v.findViewById(R.id.btnAddPatient);
+        btnUpdatePatient = v.findViewById(R.id.btnUpdatePatient);
+        btnDeletePatient = v.findViewById(R.id.btnDeletePatient);
+        rvPatients       = v.findViewById(R.id.rvPatients);
 
-        // Initialize input fields
-        firstNameEditText = view.findViewById(R.id.editTextAdmFirstName);
-        lastNameEditText = view.findViewById(R.id.editTextAdmLastName);
-        emailEditText = view.findViewById(R.id.editTextAdmEmail);
-        phoneEditText = view.findViewById(R.id.editTextAdmPhone);
-        dobEditText = view.findViewById(R.id.editTextAdmDOB);
-        passwordEditText = view.findViewById(R.id.editTextAdmPassword);
-        confirmPasswordEditText = view.findViewById(R.id.editTextAdmConfirmPassword);
+        // RecyclerView setup
+        adapter = new PatientAdapter(patients);
+        rvPatients.setLayoutManager(new LinearLayoutManager(getContext()));
+        rvPatients.setAdapter(adapter);
 
-        addButton = view.findViewById(R.id.buttonAddAdm);
-        updateButton = view.findViewById(R.id.buttonUpdateAdm);
-        deleteButton = view.findViewById(R.id.buttonDeleteAdm);
+        adapter.setOnItemClickListener(p -> {
+            selectedId = p.getUniqueId();
+            etFirstName.setText(p.getFirstName());
+            etLastName .setText(p.getLastName());
+            etEmail    .setText(p.getEmail());
+            etPhone    .setText(p.getPhone());
+            etDOB      .setText(p.getDob());
 
-        // Set button listeners
-        addButton.setOnClickListener(v -> addpatient());
-        updateButton.setOnClickListener(v -> updatepatient());
-        deleteButton.setOnClickListener(v -> deletepatient());
-
-        // Setup RecyclerView
-        recyclerView = view.findViewById(R.id.usersRecyclerView);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
-        adapter = new UserAdapter(patientList);
-        recyclerView.setAdapter(adapter);
-
-        // Set item click listener on adapter
-        adapter.setOnItemClickListener(user -> {
-            // Populate input fields with the selected user's data
-            firstNameEditText.setText(user.getFirstName());
-            lastNameEditText.setText(user.getLastName());
-            emailEditText.setText(user.getEmail());
-            phoneEditText.setText(user.getPhone());
-            dobEditText.setText(user.getDob());
-            // For security reasons, you may choose not to populate password fields
-            // Here we clear them:
-            passwordEditText.setText("");
-            confirmPasswordEditText.setText("");
-
-            // Store the selected patient's unique ID
-            selectedpatientId = user.getUniqueId();
+            btnAddPatient.setEnabled(false);
+            btnUpdatePatient.setEnabled(true);
+            btnDeletePatient.setEnabled(true);
         });
 
-        // Load patient from Firestore
-        loadpatientFromFirestore();
+        btnAddPatient.setOnClickListener(__ -> submit(false));
+        btnUpdatePatient.setOnClickListener(__ -> submit(true));
+        btnDeletePatient.setOnClickListener(__ -> deletePatient());
 
-        return view;
+        resetForm();
+        loadPatients();
+        return v;
     }
 
-    private void loadpatientFromFirestore() {
+    private void submit(boolean isUpdate) {
+        String f = etFirstName.getText().toString().trim();
+        String l = etLastName .getText().toString().trim();
+        String e = etEmail    .getText().toString().trim();
+        String p = etPhone    .getText().toString().trim();
+        String d = etDOB      .getText().toString().trim();
+
+        if (TextUtils.isEmpty(f)||TextUtils.isEmpty(l)
+                ||TextUtils.isEmpty(e)||TextUtils.isEmpty(p)
+                ||TextUtils.isEmpty(d)) {
+            Toast.makeText(getContext(),
+                    "Fill all fields", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // check duplicate email
         db.collection("users")
-                .whereEqualTo("role", "patient")
+                .whereEqualTo("role","patient")
+                .whereEqualTo("email", e)
                 .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        patientList.clear();
-                        QuerySnapshot snapshot = task.getResult();
-                        if (snapshot != null) {
-                            for (QueryDocumentSnapshot document : snapshot) {
-                                User user = document.toObject(User.class);
-                                patientList.add(user);
-                            }
+                .addOnSuccessListener(snap -> {
+                    boolean conflict = false;
+                    for (QueryDocumentSnapshot doc: snap) {
+                        String id = doc.getString("uniqueId");
+                        if (!isUpdate || !id.equals(selectedId)) {
+                            conflict = true; break;
                         }
-                        adapter.setUsers(patientList);
-                    } else {
-                        Log.e("AdminPatientFragment", "Error loading staff: ", task.getException());
                     }
-                });
-    }
-
-
-    private void addpatient() {
-        final String firstName = firstNameEditText.getText().toString().trim();
-        final String lastName = lastNameEditText.getText().toString().trim();
-        final String email = emailEditText.getText().toString().trim();
-        final String phone = phoneEditText.getText().toString().trim();
-        final String dob = dobEditText.getText().toString().trim();
-        final String password = passwordEditText.getText().toString().trim();
-        final String confirmPassword = confirmPasswordEditText.getText().toString().trim();
-
-        if (TextUtils.isEmpty(firstName) || TextUtils.isEmpty(lastName) || TextUtils.isEmpty(email)
-                || TextUtils.isEmpty(phone) || TextUtils.isEmpty(dob) || TextUtils.isEmpty(password)
-                || TextUtils.isEmpty(confirmPassword)) {
-            Toast.makeText(getContext(), "Please fill all fields", Toast.LENGTH_SHORT).show();
-            return;
-        }
-        if (!password.equals(confirmPassword)) {
-            Toast.makeText(getContext(), "Passwords do not match", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        // Generate a unique patient ID.
-        String patientId = db.collection("users").document().getId();
-
-        Map<String, Object> patientData = new HashMap<>();
-        patientData.put("uniqueId", patientId);
-        patientData.put("firstName", firstName);
-        patientData.put("lastName", lastName);
-        patientData.put("email", email);
-        patientData.put("phone", phone);
-        patientData.put("dob", dob);
-        patientData.put("role", "patient");
-        patientData.put("registeredAt", Timestamp.now());
-
-        db.collection("users").document(patientId)
-                .set(patientData)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(getContext(), "patient added successfully", Toast.LENGTH_SHORT).show();
-                    clearFields();
-                    loadpatientFromFirestore();
+                    if (conflict) {
+                        Toast.makeText(getContext(),
+                                "Email in use", Toast.LENGTH_LONG).show();
+                        return;
+                    }
+                    if (isUpdate) updatePatient(f,l,e,p,d);
+                    else          addPatient(f,l,e,p,d);
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(getContext(), "Failed to add patient: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(err -> Toast.makeText(
+                        getContext(),"Check failed: "+err.getMessage(),
+                        Toast.LENGTH_LONG).show());
     }
 
-    private void updatepatient() {
-        // Use selectedpatientId from the click event; if it's null, prompt the user.
-        if (selectedpatientId == null) {
-            Toast.makeText(getContext(), "Select a patient member from the list to update", Toast.LENGTH_SHORT).show();
-            return;
-        }
+    private void addPatient(String f, String l, String e, String p, String d) {
+        String id = db.collection("users").document().getId();
+        Map<String,Object> data = new HashMap<>();
+        data.put("uniqueId", id);
+        data.put("firstName", f);
+        data.put("lastName",  l);
+        data.put("email",     e);
+        data.put("phone",     p);
+        data.put("dob",       d);
+        data.put("role",      "patient");
+        data.put("registeredAt", Timestamp.now());
 
-        Map<String, Object> updates = new HashMap<>();
-        String firstName = firstNameEditText.getText().toString().trim();
-        String lastName = lastNameEditText.getText().toString().trim();
-        String phone = phoneEditText.getText().toString().trim();
-        String dob = dobEditText.getText().toString().trim();
-
-        if (!TextUtils.isEmpty(firstName)) updates.put("firstName", firstName);
-        if (!TextUtils.isEmpty(lastName)) updates.put("lastName", lastName);
-        if (!TextUtils.isEmpty(phone)) updates.put("phone", phone);
-        if (!TextUtils.isEmpty(dob)) updates.put("dob", dob);
-
-        db.collection("users").document(selectedpatientId)
-                .update(updates)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(getContext(), "patient updated successfully", Toast.LENGTH_SHORT).show();
-                    clearFields();
-                    selectedpatientId = null;
-                    loadpatientFromFirestore();
+        db.collection("users").document(id)
+                .set(data)
+                .addOnSuccessListener(__ -> {
+                    Toast.makeText(getContext(),"Added",Toast.LENGTH_SHORT).show();
+                    resetForm(); loadPatients();
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(getContext(), "Failed to update patient: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(err -> Toast.makeText(
+                        getContext(),"Add failed: "+err.getMessage(),
+                        Toast.LENGTH_LONG).show());
     }
 
-    private void deletepatient() {
-        if (selectedpatientId == null) {
-            Toast.makeText(getContext(), "Select a patient member from the list to delete", Toast.LENGTH_SHORT).show();
-            return;
-        }
+    private void updatePatient(String f, String l, String e, String p, String d) {
+        Map<String,Object> upd = new HashMap<>();
+        upd.put("firstName", f);
+        upd.put("lastName",  l);
+        upd.put("email",     e);
+        upd.put("phone",     p);
+        upd.put("dob",       d);
 
-        db.collection("users").document(selectedpatientId)
+        db.collection("users").document(selectedId)
+                .update(upd)
+                .addOnSuccessListener(__ -> {
+                    Toast.makeText(getContext(),"Updated",Toast.LENGTH_SHORT).show();
+                    resetForm(); loadPatients();
+                })
+                .addOnFailureListener(err -> Toast.makeText(
+                        getContext(),"Update failed: "+err.getMessage(),
+                        Toast.LENGTH_LONG).show());
+    }
+
+    private void deletePatient() {
+        if (selectedId==null) return;
+        db.collection("users").document(selectedId)
                 .delete()
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(getContext(), "patient deleted successfully", Toast.LENGTH_SHORT).show();
-                    clearFields();
-                    selectedpatientId = null;
-                    loadpatientFromFirestore();
+                .addOnSuccessListener(__ -> {
+                    Toast.makeText(getContext(),"Deleted",Toast.LENGTH_SHORT).show();
+                    resetForm(); loadPatients();
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(getContext(), "Failed to delete patient: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                .addOnFailureListener(err -> Toast.makeText(
+                        getContext(),"Delete failed: "+err.getMessage(),
+                        Toast.LENGTH_LONG).show());
+    }
+
+    private void loadPatients() {
+        db.collection("users")
+                .whereEqualTo("role","patient")
+                .get()
+                .addOnSuccessListener(snap -> {
+                    patients.clear();
+                    for (QueryDocumentSnapshot d: snap) {
+                        patients.add(d.toObject(Patient.class));
+                    }
+                    adapter.setPatients(patients);
                 });
     }
 
-    private void clearFields() {
-        firstNameEditText.setText("");
-        lastNameEditText.setText("");
-        emailEditText.setText("");
-        phoneEditText.setText("");
-        dobEditText.setText("");
-        passwordEditText.setText("");
-        confirmPasswordEditText.setText("");
+    private void resetForm() {
+        selectedId = null;
+        etFirstName.getText().clear();
+        etLastName .getText().clear();
+        etEmail    .getText().clear();
+        etPhone    .getText().clear();
+        etDOB      .getText().clear();
+        btnAddPatient   .setEnabled(true);
+        btnUpdatePatient.setEnabled(false);
+        btnDeletePatient.setEnabled(false);
     }
 }

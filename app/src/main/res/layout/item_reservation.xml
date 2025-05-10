@@ -1,47 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    android:clickable="true"
-    android:focusable="true"
-    android:foreground="?attr/selectableItemBackground">
+    android:layout_height="wrap_content"
+    app:cardCornerRadius="12dp"
+    app:cardElevation="4dp"
+    app:cardUseCompatPadding="true">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="16dp">
 
+        <!-- Reservation title / type -->
         <TextView
-            android:id="@+id/tvBy"
+            style="@style/TextAppearance.VetApp.Headline6"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="By: " />
+            android:text="@{reservation.type}" />
 
+        <!-- Date/time -->
         <TextView
-            android:id="@+id/tvPet"
+            style="@style/TextAppearance.VetApp.Body2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Pet: " />
+            android:text="@{reservation.date}" />
 
+        <!-- Optional note or status -->
         <TextView
-            android:id="@+id/tvDate"
+            style="@style/TextAppearance.VetApp.Caption"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Date: " />
-
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Time: " />
-
-        <TextView
-            android:id="@+id/tvStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Status: " />
+            android:text="@{reservation.status}" />
     </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+</androidx.cardview.widget.CardView>

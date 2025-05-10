@@ -1,4 +1,4 @@
-package com.unsalGasimliApplicationsNSUG.vetapp;
+package com.unsalGasimliApplicationsNSUG.vetapp.data;
 
 public enum ReservationType {
     APPOINTMENT,

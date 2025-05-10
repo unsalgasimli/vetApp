@@ -2,5 +2,62 @@
     <string name="app_name">vetApp</string>
     <string name="filter_by_pet">Filter by Pet</string>
     <string name="filter_by_type">Filter by Type</string>
+    <string name="appointment">Appointment</string>
+    <string name="history">History</string>
+    <string name="info">Info</string>
+    <string name="log_out">Log Out</string>
+    <string name="pet_name">Name:</string>
+    <string name="pet_species">Species:</string>
+    <string name="pet_breed">Breed:</string>
+    <string name="pet_age">Age:</string>
+    <string name="add_pet">Add Pet</string>
+    <string name="update_pet">Update Pet</string>
+
+    <!-- for the button texts -->
+    <string name="add">Add</string>
+    <string name="update">Update</string>
+    <string name="dismiss">Dismiss</string>
+
+
+    <string name="from_date">From date</string>
+    <string name="to_date">To date</string>
+    <string name="add_appointment">Add appointment</string>
+
+    <!-- Appointment types -->
+
+    <!-- Authentication -->
+    <string name="welcome_back">Welcome Back</string>
+    <string name="login">Log in</string>
+    <string name="register">Register</string>
+    <string name="error_enter_email_password">Please enter email and password</string>
+    <string name="auth_failed">Authentication failed: %1$s</string>
+    <string name="user_not_found">User record not found</string>
+    <string name="failed_load_user">Failed to load user data: %1$s</string>
+
+
+        <string name="title_reservations">Your Appointments</string>
+
+
+        <!-- item labels -->
+        <string name="type_checkup">Check-up</string>
+        <string name="type_vaccination">Vaccination</string>
+        <!-- add more as needed -->
+    <string name="hint_first_name">First name</string>
+    <string name="hint_last_name">Last name</string>
+    <string name="hint_email">Email address</string>
+    <string name="hint_phone">Phone number</string>
+    <string name="hint_dob">Date of birth (YYYY-MM-DD)</string>
+    <string name="hint_password">Password</string>
+    <string name="hint_confirm_password">Confirm password</string>
+    <string name="action_add_patient">Add Patient</string>
+    <string name="action_update_patient">Update Patient</string>
+    <string name="action_delete_patient">Delete Patient</string><string name="hint_new_password">New Password (min. 6 chars)</string>
+    <string name="action_change_password">Change Password</string>
+
+
+
+    <string name="add_prescription">Add prescription</string>
+    <!-- Reservation filters -->
+
 
 </resources>

@@ -1,26 +1,36 @@
 [versions]
-agp = "8.8.1"
-junit = "4.13.2"
-junitVersion = "1.2.1"
-espressoCore = "3.6.1"
-appcompat = "1.7.0"
-material = "1.12.0"
-activity = "1.10.1"
-constraintlayout = "2.2.1"
-firebaseCommon = "21.0.0"
-firebaseDatabase = "21.0.0"
+agp                = "7.4.2"
+kotlin             = "1.8.21"
+activity           = "1.7.2"
+appcompat          = "1.6.1"
+constraintlayout   = "2.1.4"
+material           = "1.8.0"
+lifecycle          = "2.6.1"
+coroutines         = "1.7.0"
+firebase-bom       = "33.10.0"
+junit              = "4.13.2"
+ext-junit          = "1.1.5"
+espressoCore       = "3.4.0"
 
 [libraries]
-junit = { group = "junit", name = "junit", version.ref = "junit" }
-ext-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
-appcompat = { group = "androidx.appcompat", name = "appcompat", version.ref = "appcompat" }
-material = { group = "com.google.android.material", name = "material", version.ref = "material" }
-activity = { group = "androidx.activity", name = "activity", version.ref = "activity" }
-constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
-firebase-common = { group = "com.google.firebase", name = "firebase-common", version.ref = "firebaseCommon" }
-firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
+# Firebase
+firebase-bom        = { module = "com.google.firebase:firebase-bom", version.ref = "firebase-bom" }
+firebase-analytics  = { module = "com.google.firebase:firebase-analytics" }
+firebase-firestore  = { module = "com.google.firebase:firebase-firestore" }
+firebase-auth       = { module = "com.google.firebase:firebase-auth" }
+firebase-database   = { module = "com.google.firebase:firebase-database" }
 
-[plugins]
-android-application = { id = "com.android.application", version.ref = "agp" }
+# Utilities
+material-calendar-view = { module = "com.github.prolificinteractive:material-calendarview", version = "2.0.1" }
+threetenabp            = { module = "com.jakewharton.threetenabp:threetenabp", version = "1.3.1" }
 
+# AndroidX
+appcompat          = { module = "androidx.appcompat:appcompat", version.ref = "appcompat" }
+material           = { module = "com.google.android.material:material", version.ref = "material" }
+activity-ktx       = { module = "androidx.activity:activity-ktx", version.ref = "activity" }
+constraintlayout   = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
+
+# Testing
+junit              = { module = "junit:junit", version.ref = "junit" }
+ext-junit          = { module = "androidx.test.ext:junit", version.ref = "ext-junit" }
+espresso-core      = { module = "androidx.test.espresso:espresso-core", version.ref = "espressoCore" }

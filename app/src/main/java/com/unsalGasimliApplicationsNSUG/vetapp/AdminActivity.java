@@ -15,27 +15,27 @@ public class AdminActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin);
 
-        bottomNavigationView = findViewById(R.id.bottomNavigationView);
+//        bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
         // Set the default fragment (e.g., ManageStaffFragment)
         if (savedInstanceState == null) {
-            loadFragment(new ManageStaffFragment());
+            loadFragment(new ManagePatientFragment());
         }
 
-        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
-            Fragment selectedFragment = null;
-            int id = item.getItemId();
-            if (id == R.id.nav_staff) {
-                selectedFragment = new ManageStaffFragment();
-            } else if (id == R.id.nav_patient) {
-                selectedFragment = new ManagePatientFragment();
-            }
-            if (selectedFragment != null) {
-                loadFragment(selectedFragment);
-                return true;
-            }
-            return false;
-        });
+//        bottomNavigationView.setOnNavigationItemSelectedListener(item -> {
+//            Fragment selectedFragment = null;
+//            int id = item.getItemId();
+//            if (id == R.id.nav_staff) {
+//                selectedFragment = new ManageStaffFragment();
+//            } else if (id == R.id.nav_patient) {
+//                selectedFragment = new ManagePatientFragment();
+//            }
+//            if (selectedFragment != null) {
+//                loadFragment(selectedFragment);
+//                return true;
+//            }
+//            return false;
+//        });
 
     }
 

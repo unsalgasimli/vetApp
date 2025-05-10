@@ -1,6 +1,7 @@
 package com.unsalGasimliApplicationsNSUG.vetapp;
 
 import com.google.firebase.Timestamp;
+import com.unsalGasimliApplicationsNSUG.vetapp.data.ReservationType;
 
 public abstract class ReservationItem {
     private String id;

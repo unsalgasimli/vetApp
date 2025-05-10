@@ -1,0 +1,95 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- App theme -->
+    <style name="Theme.VetApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorPrimary">@color/primary</item>
+        <item name="colorOnPrimary">@color/on_primary</item>
+        <item name="colorSecondary">@color/secondary</item>
+        <item name="android:statusBarColor">@color/primary</item>
+        <item name="android:windowBackground">@color/background</item>
+    </style>
+
+    <!-- Text inputs -->
+    <style name="Widget.VetApp.TextInput" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="boxStrokeColor">@color/primary</item>
+        <item name="boxStrokeWidth">2dp</item>
+        <item name="boxCornerRadiusTopStart">12dp</item>
+        <item name="boxCornerRadiusTopEnd">12dp</item>
+        <item name="boxCornerRadiusBottomEnd">12dp</item>
+        <item name="boxCornerRadiusBottomStart">12dp</item>
+        <item name="hintTextColor">@color/text_secondary</item>
+        <item name="helperTextTextAppearance">@style/HelperText</item>
+    </style>
+
+    <!-- Filled button -->
+    <style name="Widget.VetApp.Button" parent="Widget.MaterialComponents.Button">
+        <item name="cornerRadius">12dp</item>
+        <item name="backgroundTint">@color/primary</item>
+        <item name="android:textColor">@color/on_primary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+    </style>
+
+    <!-- Outlined button -->
+    <style name="Widget.VetApp.OutlinedButton" parent="Widget.MaterialComponents.Button.OutlinedButton">
+        <item name="cornerRadius">12dp</item>
+        <item name="strokeColor">@color/secondary</item>
+        <item name="strokeWidth">2dp</item>
+        <item name="android:textColor">@color/secondary</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:fontFamily">@font/roboto_medium</item>
+    </style>
+
+    <style name="HelperText" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">@color/text_secondary</item>
+        <item name="android:fontFamily">@font/roboto_regular</item>
+    </style>
+
+    <style name="Widget.MaterialComponents.FloatingActionButton.Primary"
+        parent="Widget.MaterialComponents.FloatingActionButton">
+        <!-- Background fill -->
+        <item name="backgroundTint">@color/primary</item>
+        <!-- Ripple on press -->
+        <item name="rippleColor">@color/primary_variant</item>
+        <!-- Icon tint (if you want your src drawable to be white) -->
+        <item name="tint">@color/on_primary</item>
+    </style>
+
+    <style name="PetItemLabel">
+        <item name="android:textSize">16sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingBottom">4dp</item>
+    </style>
+
+
+    <!-- text button for “Delete Patient” etc. -->
+    <style name="Widget.VetApp.TextButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <!-- don’t force all-caps unless you want to -->
+        <item name="android:textAllCaps">false</item>
+        <!-- use your primary (or secondary) color for the text -->
+        <item name="android:textColor">?attr/colorPrimary</item>
+        <!-- optional: adjust padding to match your other buttons -->
+        <item name="android:paddingStart">12dp</item>
+        <item name="android:paddingEnd">12dp</item>
+    </style>
+
+    <!-- Typography for our VetApp theme -->
+    <style name="TextAppearance.VetApp.Headline6" parent="TextAppearance.MaterialComponents.Headline6">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="TextAppearance.VetApp.Body2" parent="TextAppearance.MaterialComponents.Body2">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+    <style name="TextAppearance.VetApp.Caption" parent="TextAppearance.MaterialComponents.Caption">
+        <item name="android:textColor">?attr/colorOnSurface</item>
+    </style>
+
+
+    <!-- Value (detail) for each pet row -->
+    <style name="PetItemValue">
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingBottom">2dp</item>
+    </style>
+</resources>

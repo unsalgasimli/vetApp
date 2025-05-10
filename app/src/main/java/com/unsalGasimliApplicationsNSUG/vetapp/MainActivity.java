@@ -3,6 +3,8 @@ package com.unsalGasimliApplicationsNSUG.vetapp;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.jakewharton.threetenabp.AndroidThreeTen;
@@ -13,27 +15,28 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // activity_main.xml must contain a container with the ID "fragment_container"
         setContentView(R.layout.activity_main);
-        AndroidThreeTen.init(this);
 
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-
-        Fragment initialFragment;
-        if (currentUser == null) {
-            // No user signed in: show the LoginFragment
-            initialFragment = new LoginFragment();
-        } else {
-            // User is signed in: show the main content fragment
-            initialFragment = new LoginFragment();
-        }
-
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.fragment_container, initialFragment)
+        // default to patients tab
+        getSupportFragmentManager()
+                .beginTransaction()
+                .replace(R.id.fragment_container, new ManagePatientFragment())
                 .commit();
 
-
+        BottomNavigationView nav = findViewById(R.id.nav_manage);
+        nav.setOnItemSelectedListener(item -> {
+            Fragment frag;
+            if (item.getItemId() == R.id.nav_staff) {
+                frag = new ManageStaffFragment();
+            } else {
+                frag = new ManagePatientFragment();
+            }
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, frag)
+                    .commit();
+            return true;
+        });
     }
 }
 
