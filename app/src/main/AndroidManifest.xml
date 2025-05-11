@@ -1,5 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+    package="com.unsalGasimliApplicationsNSUG.vetapp">
 
     <application
         android:allowBackup="true"
@@ -9,12 +10,11 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.VetApp"
-        tools:targetApi="31">
+        android:theme="@style/Theme.VetApp">
 
-        <!-- MainActivity is the launcher activity -->
+        <!-- Launcher should be the AuthActivity in ui.main -->
         <activity
-            android:name=".MainActivity"
+            android:name=".ui.main.AuthActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -22,11 +22,22 @@
             </intent-filter>
         </activity>
 
-        <!-- AdminActivity must be declared so it can be launched from LoginFragment -->
-        <activity android:name=".AdminActivity" />
+        <!-- Admin screen -->
+        <activity
+            android:name=".ui.main.AdminActivity"
+            android:exported="false" />
 
-        <!-- PatientActivity for managing patient tabs (reservations, pets, user data) -->
-        <activity android:name=".PatientActivity" />
+        <!-- Staff screen -->
+        <activity
+            android:name=".ui.staff.StaffActivity"
+            android:exported="false" />
+
+        <!-- Patient screen -->
+        <activity
+            android:name=".ui.patient.PatientActivity"
+            android:exported="false" />
+
+        <!-- Legacy MainActivity (if still used) -->
+
     </application>
-
 </manifest>

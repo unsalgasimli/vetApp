@@ -2,22 +2,21 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app   ="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_gradient"
     android:padding="16dp"
-    tools:context=".ui.staff.ManageStaffFragment">
+    android:background="@color/background">
 
     <com.google.android.material.card.MaterialCardView
-        android:id="@+id/card_form"
+        android:id="@+id/card_profile"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:cardCornerRadius="12dp"
-        app:cardElevation="4dp">
+        app:cardElevation="4dp"
+        android:layout_marginTop="40dp">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -35,7 +34,7 @@
                 android:layout_height="wrap_content"
                 android:hint="First Name">
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etStaffFirst"
+                    android:id="@+id/etFirstName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
@@ -48,37 +47,9 @@
                 android:layout_marginTop="12dp"
                 android:hint="Last Name">
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etStaffLast"
+                    android:id="@+id/etLastName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Email -->
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.VetApp.TextInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:hint="Email">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etStaffEmail"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textEmailAddress"/>
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <!-- Password -->
-            <com.google.android.material.textfield.TextInputLayout
-                style="@style/Widget.VetApp.TextInput"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:hint="Password">
-                <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etStaffPassword"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="textPassword"/>
             </com.google.android.material.textfield.TextInputLayout>
 
             <!-- Phone -->
@@ -89,67 +60,49 @@
                 android:layout_marginTop="12dp"
                 android:hint="Phone">
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etStaffPhone"
+                    android:id="@+id/etPhone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="phone"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Position -->
+            <!-- DOB -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.VetApp.TextInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="Position">
+                android:hint="Date of Birth">
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etStaffPosition"
+                    android:id="@+id/etDOB"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:inputType="date"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Department -->
+            <!-- Email (read-only) -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.VetApp.TextInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="Department">
+                android:hint="Email">
                 <com.google.android.material.textfield.TextInputEditText
-                    android:id="@+id/etStaffDept"
+                    android:id="@+id/etEmail"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"/>
+                    android:layout_height="wrap_content"
+                    android:inputType="textEmailAddress"
+                    android:enabled="false"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Action & Delete -->
+            <!-- Save button -->
             <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnStaffAction"
+                android:id="@+id/btnSaveProfile"
                 style="@style/Widget.VetApp.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Add Staff"/>
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnStaffDelete"
-                style="@style/Widget.VetApp.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:text="Delete Staff"
-                android:visibility="gone"/>
-
+                android:text="Save"/>
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
-
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvStaff"
-        android:layout_width="0dp"
-        android:layout_height="0dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/card_form"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        tools:listitem="@layout/item_staff"/>
 </androidx.constraintlayout.widget.ConstraintLayout>

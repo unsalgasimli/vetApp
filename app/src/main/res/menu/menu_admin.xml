@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Patients tab -->
+    <item
+        android:id="@+id/nav_patient"
+        android:icon="@drawable/patient"
+        android:title="Patients" />
+
+    <!-- Staff tab -->
+    <item
+        android:id="@+id/nav_staff"
+        android:icon="@drawable/staff"
+        android:title="Staff" />
+</menu>

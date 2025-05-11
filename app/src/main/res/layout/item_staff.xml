@@ -1,56 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app   ="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:padding="8dp">
+    android:layout_margin="8dp"
+    app:cardCornerRadius="8dp"
+    app:cardElevation="4dp"
+    app:cardUseCompatPadding="true"
+    android:foreground="?attr/selectableItemBackground"
+    android:clickable="true"
+    android:focusable="true">
 
-    <TextView
-        android:id="@+id/textViewName"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="John Doe"
-        android:textStyle="bold"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/textViewEmail"
-        app:layout_constraintHorizontal_weight="1"/>
+        android:padding="16dp"
+        app:layout_constraintHorizontal_chainStyle="spread">
 
-    <TextView
-        android:id="@+id/textViewEmail"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="email@example.com"
-        android:textSize="14sp"
-        app:layout_constraintStart_toEndOf="@id/textViewName"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintHorizontal_weight="1"/>
+        <!-- Name -->
+        <TextView
+            android:id="@+id/textViewName"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="John Doe"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.TitleMedium"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/textViewEmail"
+            app:layout_constraintHorizontal_weight="1"/>
 
-    <TextView
-        android:id="@+id/textViewPosition"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Veterinarian"
-        android:textSize="14sp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintTop_toBottomOf="@id/textViewName"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/textViewDepartment"
-        app:layout_constraintHorizontal_weight="1"/>
+        <!-- Email -->
+        <TextView
+            android:id="@+id/textViewEmail"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="email@example.com"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            app:layout_constraintStart_toEndOf="@id/textViewName"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintHorizontal_weight="1"/>
 
-    <TextView
-        android:id="@+id/textViewDepartment"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Surgery"
-        android:textSize="14sp"
-        android:layout_marginTop="4dp"
-        app:layout_constraintTop_toBottomOf="@id/textViewEmail"
-        app:layout_constraintStart_toEndOf="@id/textViewPosition"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_weight="1"/>
+        <!-- Position -->
+        <TextView
+            android:id="@+id/textViewPosition"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Veterinarian"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewName"
+            app:layout_constraintEnd_toStartOf="@id/textViewDepartment"
+            app:layout_constraintHorizontal_weight="1"/>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <!-- Department -->
+        <TextView
+            android:id="@+id/textViewDepartment"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Surgery"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            android:layout_marginTop="8dp"
+            app:layout_constraintStart_toEndOf="@id/textViewPosition"
+            app:layout_constraintTop_toBottomOf="@id/textViewEmail"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_weight="1"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</com.google.android.material.card.MaterialCardView>

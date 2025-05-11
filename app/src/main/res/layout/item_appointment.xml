@@ -1,62 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView
+<androidx.cardview.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_width="match_parent" android:layout_height="wrap_content"
     android:layout_margin="8dp">
 
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:padding="8dp">
+        android:padding="12dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/tvDoc"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Doc:" />
+        <TextView android:id="@+id/txtType"
+            android:textStyle="bold" android:textSize="16sp"
+            android:layout_width="match_parent" android:layout_height="wrap_content"/>
 
-        <TextView
-            android:id="@+id/tvPat"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Patient:" />
+        <TextView android:id="@+id/txtCounterparty"
+            android:layout_marginTop="4dp"
+            android:textSize="14sp"
+            android:layout_width="match_parent" android:layout_height="wrap_content"/>
 
-        <TextView
-            android:id="@+id/tvPet"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Pet:" />
+        <TextView android:id="@+id/txtDate"
+            android:layout_marginTop="2dp"
+            android:textSize="14sp"
+            android:layout_width="match_parent" android:layout_height="wrap_content"/>
 
-        <TextView
-            android:id="@+id/tvDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Date:" />
 
-        <TextView
-            android:id="@+id/tvTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Time:" />
-
-        <TextView
-            android:id="@+id/tvAppointmentType"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Appointment Type:" />
-
-        <TextView
-            android:id="@+id/tvInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Info:" />
-
-        <TextView
-            android:id="@+id/tvStatus"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Status:" />
-    </LinearLayout>
-</com.google.android.material.card.MaterialCardView>
+    <TextView android:id="@+id/txtStatus"
+        android:layout_marginTop="2dp"
+        android:textSize="14sp"
+        android:layout_width="match_parent" android:layout_height="wrap_content"/>
+</LinearLayout>
+</androidx.cardview.widget.CardView>

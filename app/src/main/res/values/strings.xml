@@ -13,7 +13,16 @@
     <string name="add_pet">Add Pet</string>
     <string name="update_pet">Update Pet</string>
 
+    <string name="filter_from_date">From Date</string>
+    <string name="filter_to_date">To Date</string>
+
+    <string name="select_patient">Select Patient</string>
+
+    <!-- FAB content descriptions -->
+    <string name="action_add_staff">Add Staff</string>
+    <string name="action_update_staff">Update Staff</string>
     <!-- for the button texts -->
+    <string name="add_item">Add Item</string>
     <string name="add">Add</string>
     <string name="update">Update</string>
     <string name="dismiss">Dismiss</string>
@@ -34,15 +43,42 @@
     <string name="user_not_found">User record not found</string>
     <string name="failed_load_user">Failed to load user data: %1$s</string>
 
-
         <string name="title_reservations">Your Appointments</string>
+    <string-array name="filter_types">
+        <item>All</item>
+        <item>Check-up</item>
+        <item>Surgery</item>
+        <!-- etc. -->
+    </string-array>
+
+    <string-array name="filter_patients">
+        <item>All</item>
+        <item>John Doe</item>
+        <item>Jane Roe</item>
+        <!-- etc. -->
+    </string-array>
+
+    <string-array name="appointment_types">
+        <item>Consultation</item>
+        <item>Vaccination</item>
+        <item>Follow-up</item>
+        <item>Emergency</item>
+    </string-array>
+    <string name="unknown_date">—</string>
+    <string name="choose_counterparty">Choose Person</string>
+    <string name="medication">Medication</string>
+    <string name="dosage">Dosage</string>
+    <string name="submit_prescription">Submit Prescription</string>
 
 
-        <!-- item labels -->
+
+
+    <!-- item labels -->
         <string name="type_checkup">Check-up</string>
         <string name="type_vaccination">Vaccination</string>
         <!-- add more as needed -->
     <string name="hint_first_name">First name</string>
+    <string name="filter_title">Filter reservations</string>
     <string name="hint_last_name">Last name</string>
     <string name="hint_email">Email address</string>
     <string name="hint_phone">Phone number</string>
@@ -53,11 +89,9 @@
     <string name="action_update_patient">Update Patient</string>
     <string name="action_delete_patient">Delete Patient</string><string name="hint_new_password">New Password (min. 6 chars)</string>
     <string name="action_change_password">Change Password</string>
+    <string name="filter_by_patient">Filter by Patient</string>
+    <string name="add_prescription">Add Prescription</string>
 
-
-
-    <string name="add_prescription">Add prescription</string>
-    <!-- Reservation filters -->
 
 
 </resources>

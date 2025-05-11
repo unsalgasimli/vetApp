@@ -62,6 +62,48 @@
     </style>
 
 
+
+    <style name="TextAppearance.MaterialComponents.TitleMedium"
+        parent="TextAppearance.MaterialComponents.Headline6">
+        <!-- Font family: use your Roboto Medium (500) or other -->
+        <item name="fontFamily">@font/roboto_medium</item>
+
+        <!-- 16sp is the recommended Title Medium size -->
+        <item name="android:textSize">16sp</item>
+
+        <!-- Medium weight: 500 -->
+        <item name="android:fontWeight">500</item>
+
+        <!-- 24sp line height for good readability -->
+        <item name="android:lineHeight">24sp</item>
+
+        <!-- 0.15sp letter spacing -->
+        <item name="android:letterSpacing">0.15</item>
+    </style>
+
+    <!-- BodyMedium: 14sp, 0.15em letter-spacing -->
+
+        <!-- BodyMedium: 14sp size, 0.15em letter-spacing -->
+        <style name="TextAppearance.MaterialComponents.BodyMedium"
+            parent="@style/TextAppearance.MaterialComponents.Body2">
+            <!-- optional: swap in your own font -->
+            <item name="android:fontFamily">@font/roboto_regular</item>
+
+            <!-- main text size -->
+            <item name="android:textSize">14sp</item>
+
+            <!-- MUST use android:letterSpacing and no unit -->
+            <item name="android:letterSpacing">0.15</item>
+
+            <!-- optional line height to match Material spec -->
+            <item name="android:lineHeight">20sp</item>
+
+            <!-- default text color -->
+            <item name="android:textColor">@color/text_primary</item>
+        </style>
+
+
+
     <!-- text button for “Delete Patient” etc. -->
     <style name="Widget.VetApp.TextButton" parent="Widget.MaterialComponents.Button.TextButton">
         <!-- don’t force all-caps unless you want to -->

@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- checked/selected: use your secondary color -->
+    <item android:color="@color/secondary" android:state_checked="true"/>
+    <!-- pressed: a slightly darker accent (primary_variant) -->
+    <item android:color="@color/primary_variant" android:state_pressed="true"/>
+    <!-- default/unselected: use your text_secondary -->
+    <item android:color="@color/text_secondary"/>
+</selector>
