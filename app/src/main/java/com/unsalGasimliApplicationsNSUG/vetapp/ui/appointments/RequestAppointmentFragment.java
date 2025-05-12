@@ -28,14 +28,11 @@ import java.util.Calendar;
 import java.util.List;
 
 public class RequestAppointmentFragment extends Fragment {
-
     private static final String ARG_PATIENT_ID = "ARG_PATIENT_ID";
-
     private FragmentRequestAppointmentBinding binding;
     private String patientId;
     private final List<User> doctors = new ArrayList<>();
     private final AppointmentRepository repo = new AppointmentRepository();
-
 
     public static RequestAppointmentFragment newInstance(@NonNull String patientId) {
         RequestAppointmentFragment frag = new RequestAppointmentFragment();
@@ -44,7 +41,6 @@ public class RequestAppointmentFragment extends Fragment {
         frag.setArguments(args);
         return frag;
     }
-
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -59,20 +55,18 @@ public class RequestAppointmentFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-
         binding = FragmentRequestAppointmentBinding.inflate(inflater, container, false);
         return binding.getRoot();
     }
 
     @Override
-    public void onViewCreated(@NonNull View v, @Nullable Bundle s) {
-        super.onViewCreated(v, s);
-
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         setupTypeSpinner();
-        loadDoctorsFromFirestore();
+        loadDoctors();
         setupDatePicker();
         setupTimePicker();
-        binding.btnSubmit.setOnClickListener(view -> trySubmit());
+        binding.btnSubmit.setOnClickListener(v -> submit());
     }
 
     @Override
@@ -81,15 +75,39 @@ public class RequestAppointmentFragment extends Fragment {
         binding = null;
     }
 
-
     private void setupTypeSpinner() {
-        ArrayAdapter<CharSequence> typeAdapter = ArrayAdapter.createFromResource(
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(
                 requireContext(),
                 R.array.appointment_types,
-                android.R.layout.simple_spinner_item
-        );
-        typeAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        binding.spinnerTypes.setAdapter(typeAdapter);
+                android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        binding.spinnerTypes.setAdapter(adapter);
+    }
+
+    private void loadDoctors() {
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .whereEqualTo("role", "staff")
+                .get()
+                .addOnSuccessListener(snap -> {
+                    doctors.clear();
+                    List<String> names = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : snap) {
+                        User u = doc.toObject(User.class);
+                        doctors.add(u);
+                        names.add(u.getDisplayName());
+                    }
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(
+                            requireContext(),
+                            android.R.layout.simple_spinner_item,
+                            names);
+                    adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                    binding.spinnerDoctors.setAdapter(adapter);
+                })
+                .addOnFailureListener(e ->
+                        Toast.makeText(requireContext(),
+                                getString(R.string.failed_loading_doctors, e.getMessage()),
+                                Toast.LENGTH_LONG).show());
     }
 
     private void setupDatePicker() {
@@ -118,134 +136,75 @@ public class RequestAppointmentFragment extends Fragment {
         });
     }
 
-
-    private void loadDoctorsFromFirestore() {
-        FirebaseFirestore.getInstance()
-                .collection("users")
-                .whereEqualTo("role", "staff")
-                .get()
-                .addOnSuccessListener(snap -> {
-                    doctors.clear();
-                    List<String> names = new ArrayList<>();
-                    for (QueryDocumentSnapshot doc : snap) {
-                        User d = doc.toObject(User.class);
-                        doctors.add(d);
-                        names.add(d.getDisplayName());
-                    }
-                    ArrayAdapter<String> doctorAdapter = new ArrayAdapter<>(
-                            requireContext(),
-                            android.R.layout.simple_spinner_item,
-                            names
-                    );
-                    doctorAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                    binding.spinnerDoctors.setAdapter(doctorAdapter);
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(requireContext(),
-                                "Failed loading doctors: " + e.getMessage(),
-                                Toast.LENGTH_LONG).show()
-                );
-    }
-
-
-    private void trySubmit() {
-
-
+    private void submit() {
         if (doctors.isEmpty()) {
-            Toast.makeText(requireContext(), "Doctors still loading…", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.doctors_loading, Toast.LENGTH_SHORT).show();
             return;
         }
-
-        /* 1) Form doğrulama */
-        String dateStr = binding.etDate.getText().toString().trim();
-        String timeStr = binding.etTime.getText().toString().trim();
-        if (dateStr.isEmpty() || timeStr.isEmpty()) {
-            Toast.makeText(requireContext(), "Pick both date & time", Toast.LENGTH_SHORT).show();
+        String date = binding.etDate.getText().toString().trim();
+        String time = binding.etTime.getText().toString().trim();
+        if (date.isEmpty() || time.isEmpty()) {
+            Toast.makeText(requireContext(), R.string.pick_date_time, Toast.LENGTH_SHORT).show();
             return;
         }
-
         String uid = FirebaseAuth.getInstance().getUid();
         if (uid == null) {
-            Toast.makeText(requireContext(), "User not authenticated", Toast.LENGTH_LONG).show();
+            Toast.makeText(requireContext(), R.string.user_not_authenticated, Toast.LENGTH_LONG).show();
             return;
         }
-
-        /* 2) Hasta ad-soyadını çek */
         FirebaseFirestore.getInstance()
                 .collection("users")
                 .document(uid)
                 .get()
                 .addOnSuccessListener(userDoc -> {
-                    String patientName = combineName(
-                            userDoc.getString("firstName"),
-                            userDoc.getString("lastName")
-                    );
-                    createAndSaveAppointment(uid, patientName, dateStr, timeStr);
+                    String name = combine(userDoc.getString("firstName"), userDoc.getString("lastName"));
+                    saveAppointment(uid, name, date, time);
                 })
                 .addOnFailureListener(e ->
                         Toast.makeText(requireContext(),
-                                "Failed fetching patient info: " + e.getMessage(),
-                                Toast.LENGTH_LONG).show()
-                );
+                                getString(R.string.failed_fetching_patient, e.getMessage()),
+                                Toast.LENGTH_LONG).show());
     }
 
-
-    private void createAndSaveAppointment(String patientUid,
-                                          String patientName,
-                                          String dateStr,
-                                          String timeStr) {
-
-
+    private void saveAppointment(String pid, String pname, String date, String time) {
         int pos = binding.spinnerDoctors.getSelectedItemPosition();
         pos = Math.max(0, Math.min(pos, doctors.size() - 1));
-        User selectedDoctor = doctors.get(pos);
-
-
-        Timestamp ts = null;
+        User doc = doctors.get(pos);
+        Timestamp ts;
         try {
-            String[] d = dateStr.split("-");
-            String[] t = timeStr.split(":");
-            Calendar cal = Calendar.getInstance();
-            cal.set(
-                    Integer.parseInt(d[0]),
-                    Integer.parseInt(d[1]) - 1,
-                    Integer.parseInt(d[2]),
-                    Integer.parseInt(t[0]),
-                    Integer.parseInt(t[1])
-            );
-            ts = new Timestamp(cal.getTime());
-        } catch (Exception ignored) { }
-
-
+            String[] d = date.split("-");
+            String[] t = time.split(":");
+            Calendar c = Calendar.getInstance();
+            c.set(Integer.parseInt(d[0]), Integer.parseInt(d[1]) - 1, Integer.parseInt(d[2]),
+                    Integer.parseInt(t[0]), Integer.parseInt(t[1]));
+            ts = new Timestamp(c.getTime());
+        } catch (Exception ex) { ts = null; }
         Appointment a = new Appointment();
         a.setType(binding.spinnerTypes.getSelectedItem().toString());
-        a.setDoctorId(selectedDoctor.getId());
-        a.setDoctorName(selectedDoctor.getDisplayName());
-        a.setPatientId(patientUid);
-        a.setPatientName(patientName);
+        a.setDoctorId(doc.getId());
+        a.setDoctorName(doc.getDisplayName());
+        a.setPatientId(pid);
+        a.setPatientName(pname);
         a.setDateTime(ts);
         a.setStatus("Requested");
-
-
         repo.create(a, new AppointmentRepository.Callback<Void>() {
-            @Override public void onSuccess(Void unused) {
-                Toast.makeText(requireContext(),
-                        "Appointment requested!", Toast.LENGTH_SHORT).show();
+            @Override public void onSuccess(Void data) {
+                Toast.makeText(requireContext(), R.string.appointment_requested, Toast.LENGTH_SHORT).show();
                 requireActivity().getSupportFragmentManager().popBackStack();
             }
             @Override public void onError(Throwable t) {
                 Toast.makeText(requireContext(),
-                        "Error: " + t.getMessage(), Toast.LENGTH_LONG).show();
+                        getString(R.string.create_error, t.getMessage()),
+                        Toast.LENGTH_LONG).show();
             }
         });
     }
 
-
     @NonNull
-    private static String combineName(@Nullable String first, @Nullable String last) {
+    private static String combine(String f, String l) {
         StringBuilder sb = new StringBuilder();
-        if (first != null) sb.append(first);
-        if (last  != null) sb.append(" ").append(last);
+        if (f != null) sb.append(f);
+        if (l != null) sb.append(" ").append(l);
         return sb.toString().trim();
     }
 }

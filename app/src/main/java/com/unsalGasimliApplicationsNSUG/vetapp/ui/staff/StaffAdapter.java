@@ -15,9 +15,7 @@ import com.unsalGasimliApplicationsNSUG.vetapp.data.model.Staff;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Adapter for displaying a list of Staff objects in RecyclerView.
- */
+
 public class StaffAdapter extends RecyclerView.Adapter<StaffAdapter.VH> {
     public interface OnItemClickListener {
         void onItemClick(@NonNull Staff staff);

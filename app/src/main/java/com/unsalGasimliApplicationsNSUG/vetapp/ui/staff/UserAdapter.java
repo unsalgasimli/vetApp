@@ -13,9 +13,6 @@ import com.unsalGasimliApplicationsNSUG.vetapp.data.model.User;
 
 import java.util.List;
 
-/**
- * Adapter for displaying User items (patients) in a RecyclerView.
- */
 public class UserAdapter extends RecyclerView.Adapter<UserAdapter.VH> {
     public interface OnItemClickListener {
         void onItemClick(@NonNull User user);

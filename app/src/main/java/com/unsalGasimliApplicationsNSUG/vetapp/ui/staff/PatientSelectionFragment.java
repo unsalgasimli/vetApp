@@ -10,38 +10,37 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.unsalGasimliApplicationsNSUG.vetapp.R;
-import com.unsalGasimliApplicationsNSUG.vetapp.data.repository.AppointmentRepository;
 import com.unsalGasimliApplicationsNSUG.vetapp.data.model.User;
+import com.unsalGasimliApplicationsNSUG.vetapp.data.repository.AppointmentRepository;
+import com.unsalGasimliApplicationsNSUG.vetapp.databinding.FragmentPatientSelectionBinding;
 import com.unsalGasimliApplicationsNSUG.vetapp.ui.appointments.AppointmentFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PatientSelectionFragment extends Fragment {
-
-    private RecyclerView recycler;
-    private UserAdapter adapter;
+    private FragmentPatientSelectionBinding binding;
     private final List<User> patients = new ArrayList<>();
     private final AppointmentRepository repo = new AppointmentRepository();
 
-    @Nullable @Override
+    @Nullable
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_patient_selection, container, false);
+        binding = FragmentPatientSelectionBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
-    @Override public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        recycler = view.findViewById(R.id.recyclerPatients);
-        recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.recyclerPatients.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        adapter = new UserAdapter(patients, user -> {
-            // When staff taps a patient, show that patient’s appointments
+        UserAdapter adapter = new UserAdapter(patients, user -> {
             Fragment next = AppointmentFragment.newInstance(user.getId());
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()
@@ -49,20 +48,28 @@ public class PatientSelectionFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
-        recycler.setAdapter(adapter);
+        binding.recyclerPatients.setAdapter(adapter);
 
-        // load all users with role == "patient"
         repo.fetchPatients(new AppointmentRepository.Callback<List<User>>() {
-            @Override public void onSuccess(List<User> data) {
+            @Override
+            public void onSuccess(List<User> data) {
                 patients.clear();
                 patients.addAll(data);
                 adapter.notifyDataSetChanged();
             }
-            @Override public void onError(Throwable t) {
+
+            @Override
+            public void onError(Throwable t) {
                 Toast.makeText(requireContext(),
-                        "Failed to load patients: " + t.getMessage(),
+                        getString(R.string.load_patients_failed, t.getMessage()),
                         Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

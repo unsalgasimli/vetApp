@@ -115,7 +115,9 @@ public class PrescriptionRepository {
                 .addOnFailureListener(cb::onError);
     }
 
-
+    public FirebaseFirestore getFirestore() {
+        return db;
+    }
 
 
 

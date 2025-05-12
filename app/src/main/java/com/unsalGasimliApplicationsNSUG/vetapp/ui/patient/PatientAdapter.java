@@ -15,16 +15,14 @@ import com.unsalGasimliApplicationsNSUG.vetapp.data.model.Patient;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * Adapter for displaying a list of Patient objects.
- */
 public class PatientAdapter extends RecyclerView.Adapter<PatientAdapter.VH> {
     public interface OnItemClickListener {
         void onItemClick(@NonNull Patient patient);
     }
 
     private final List<Patient> patients = new ArrayList<>();
-    @Nullable private OnItemClickListener listener;
+    @Nullable
+    private OnItemClickListener listener;
 
     public PatientAdapter(@Nullable List<Patient> initial) {
         if (initial != null) patients.addAll(initial);
@@ -40,7 +38,8 @@ public class PatientAdapter extends RecyclerView.Adapter<PatientAdapter.VH> {
         listener = l;
     }
 
-    @NonNull @Override
+    @NonNull
+    @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View v = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_patient, parent, false);
@@ -50,13 +49,13 @@ public class PatientAdapter extends RecyclerView.Adapter<PatientAdapter.VH> {
     @Override
     public void onBindViewHolder(@NonNull VH holder, int pos) {
         Patient p = patients.get(pos);
-        // Bind all fields
+
         holder.name.setText(p.getFirstName() + " " + p.getLastName());
         holder.email.setText(p.getEmail());
         holder.phone.setText(p.getPhone());
         holder.dob.setText(p.getDob());
 
-        // Set click listener
+
         if (listener != null) {
             holder.itemView.setOnClickListener(v -> listener.onItemClick(p));
         } else {
@@ -64,7 +63,8 @@ public class PatientAdapter extends RecyclerView.Adapter<PatientAdapter.VH> {
         }
     }
 
-    @Override public int getItemCount() {
+    @Override
+    public int getItemCount() {
         return patients.size();
     }
 
@@ -76,10 +76,10 @@ public class PatientAdapter extends RecyclerView.Adapter<PatientAdapter.VH> {
 
         VH(View itemView) {
             super(itemView);
-            name  = itemView.findViewById(R.id.tvName);
+            name = itemView.findViewById(R.id.tvName);
             email = itemView.findViewById(R.id.tvEmail);
             phone = itemView.findViewById(R.id.tvPhone);
-            dob   = itemView.findViewById(R.id.tvDob);
+            dob = itemView.findViewById(R.id.tvDob);
         }
     }
 }

@@ -17,6 +17,7 @@ android {
     }
     buildFeatures {
         viewBinding = true
+        buildConfig  = true
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -34,4 +35,6 @@ dependencies {
     implementation("androidx.constraintlayout:constraintlayout:2.1.4")
     implementation("androidx.recyclerview:recyclerview:1.3.0")
     implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+    implementation(libs.monitor)
+    implementation(libs.androidx.junit)
 }

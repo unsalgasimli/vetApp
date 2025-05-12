@@ -15,15 +15,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AppointmentRepository {
-    /** Simple callback for async results */
+
     public interface Callback<T> {
         void onSuccess(T data);
+
         void onError(Throwable t);
     }
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    /** Create a new appointment under /users/{patientId}/appointments */
+
     public void create(@NonNull Appointment appt, @NonNull Callback<Void> cb) {
         CollectionReference col = db
                 .collection("users")
@@ -36,7 +37,6 @@ public class AppointmentRepository {
                 .addOnFailureListener(cb::onError);
     }
 
-    /** Fetch all appointments for a patient, ordered by Timestamp dateTime */
     public void fetchAll(@NonNull String patientId, @NonNull Callback<List<Appointment>> cb) {
         db.collection("users")
                 .document(patientId)
@@ -54,12 +54,12 @@ public class AppointmentRepository {
                 .addOnFailureListener(cb::onError);
     }
 
-    /** Alias for fetchAll to maintain compatibility */
+
     public void fetchAppointments(@NonNull String patientId, @NonNull Callback<List<Appointment>> cb) {
         fetchAll(patientId, cb);
     }
 
-    /** Fetch all doctors */
+
     public void fetchDoctors(@NonNull Callback<List<User>> cb) {
         db.collection("users")
                 .whereEqualTo("role", "doctor")
@@ -74,7 +74,7 @@ public class AppointmentRepository {
                 .addOnFailureListener(cb::onError);
     }
 
-    /** Fetch all patients */
+
     public void fetchPatients(@NonNull Callback<List<User>> cb) {
         db.collection("users")
                 .whereEqualTo("role", "patient")
@@ -89,7 +89,6 @@ public class AppointmentRepository {
                 .addOnFailureListener(cb::onError);
     }
 
-    /** Fetch all appointments across all patients */
     public void fetchAllAppointments(@NonNull Callback<List<Appointment>> cb) {
         db.collectionGroup("appointments")
                 .orderBy("dateTime", Query.Direction.ASCENDING)
@@ -106,7 +105,6 @@ public class AppointmentRepository {
                 .addOnFailureListener(cb::onError);
     }
 
-    /** Update an appointment's status */
     public void updateStatus(@NonNull String patientId,
                              @NonNull String appointmentId,
                              @NonNull String newStatus,
@@ -121,8 +119,5 @@ public class AppointmentRepository {
                 .addOnFailureListener(cb::onError);
     }
 
-    /** Fetch appointments for a patient sorted by date */
-    public void fetchAllByDate(@NonNull String patientId, @NonNull Callback<List<Appointment>> cb) {
-        fetchAll(patientId, cb);
-    }
+
 }

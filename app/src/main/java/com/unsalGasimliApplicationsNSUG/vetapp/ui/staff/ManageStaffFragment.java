@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.AuthResult;
@@ -20,9 +19,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.unsalGasimliApplicationsNSUG.vetapp.R;
 import com.unsalGasimliApplicationsNSUG.vetapp.data.model.Staff;
-
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
+import com.unsalGasimliApplicationsNSUG.vetapp.databinding.FragmentManageStaffBinding;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -30,200 +27,169 @@ import java.util.List;
 import java.util.Map;
 
 public class ManageStaffFragment extends Fragment {
-
-    private TextInputEditText etFirst, etLast, etEmail, etPassword, etPhone, etPosition, etDepartment;
-    private MaterialButton btnAction, btnDelete;
-    private RecyclerView rvStaff;
+    private FragmentManageStaffBinding binding;
     private StaffAdapter adapter;
-    private List<Staff> staffList = new ArrayList<>();
+    private final List<Staff> staffList = new ArrayList<>();
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
     private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private String selectedId = null;
+    private String selectedId;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
-                             ViewGroup container,
-                             Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_manage_staff, container, false);
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        binding = FragmentManageStaffBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
 
-        etFirst      = v.findViewById(R.id.etStaffFirst);
-        etLast       = v.findViewById(R.id.etStaffLast);
-        etEmail      = v.findViewById(R.id.etStaffEmail);
-        etPassword   = v.findViewById(R.id.etStaffPassword);
-        etPhone      = v.findViewById(R.id.etStaffPhone);
-        etPosition   = v.findViewById(R.id.etStaffPosition);
-        etDepartment = v.findViewById(R.id.etStaffDept);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
-        btnAction = v.findViewById(R.id.btnStaffAction);
-        btnDelete = v.findViewById(R.id.btnStaffDelete);
-
-        rvStaff = v.findViewById(R.id.rvStaff);
-        rvStaff.setLayoutManager(new LinearLayoutManager(getContext()));
         adapter = new StaffAdapter(staffList);
-        rvStaff.setAdapter(adapter);
+        binding.rvStaff.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.rvStaff.setAdapter(adapter);
 
         adapter.setOnItemClickListener(s -> {
             selectedId = s.getUniqueId();
-            etFirst    .setText(s.getFirstName());
-            etLast     .setText(s.getLastName());
-            etEmail    .setText(s.getEmail());
-            etPassword .setText("");
-            etPhone    .setText(s.getPhone());
-            etPosition .setText(s.getPosition());
-            etDepartment.setText(s.getDepartment());
+            binding.etStaffFirst.setText(s.getFirstName());
+            binding.etStaffLast.setText(s.getLastName());
+            binding.etStaffEmail.setText(s.getEmail());
+            binding.etStaffPassword.setText("");
+            binding.etStaffPhone.setText(s.getPhone());
+            binding.etStaffPosition.setText(s.getPosition());
+            binding.etStaffDept.setText(s.getDepartment());
 
-            btnAction.setText(R.string.action_update_staff);
-            btnDelete.setVisibility(View.VISIBLE);
+            binding.btnStaffAction.setText(R.string.action_update_staff);
+            binding.btnStaffDelete.setVisibility(View.VISIBLE);
         });
 
-        btnAction.setOnClickListener(x -> checkAndSubmit());
-        btnDelete.setOnClickListener(x -> deleteStaff());
+        binding.btnStaffAction.setOnClickListener(v -> checkAndSubmit());
+        binding.btnStaffDelete.setOnClickListener(v -> deleteStaff());
 
         loadStaff();
-        return v;
     }
 
     private void checkAndSubmit() {
-        String first    = etFirst   .getText().toString().trim();
-        String last     = etLast    .getText().toString().trim();
-        String email    = etEmail   .getText().toString().trim();
-        String password = etPassword.getText().toString().trim();
-        String phone    = etPhone   .getText().toString().trim();
-        String pos      = etPosition.getText().toString().trim();
-        String dept     = etDepartment.getText().toString().trim();
+        String first = binding.etStaffFirst.getText().toString().trim();
+        String last = binding.etStaffLast.getText().toString().trim();
+        String email = binding.etStaffEmail.getText().toString().trim();
+        String password = binding.etStaffPassword.getText().toString().trim();
+        String phone = binding.etStaffPhone.getText().toString().trim();
+        String pos = binding.etStaffPosition.getText().toString().trim();
+        String dept = binding.etStaffDept.getText().toString().trim();
 
         if (TextUtils.isEmpty(first) || TextUtils.isEmpty(last) ||
                 TextUtils.isEmpty(email) || TextUtils.isEmpty(phone) ||
-                TextUtils.isEmpty(pos)   || TextUtils.isEmpty(dept)) {
-            Toast.makeText(getContext(), "Fill all fields", Toast.LENGTH_SHORT).show();
+                TextUtils.isEmpty(pos) || TextUtils.isEmpty(dept)) {
+            Toast.makeText(requireContext(), R.string.fill_all_fields, Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (selectedId == null && TextUtils.isEmpty(password)) {
-            Toast.makeText(getContext(), "Enter a password", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.enter_password, Toast.LENGTH_SHORT).show();
             return;
         }
 
         if (selectedId == null) {
             mAuth.createUserWithEmailAndPassword(email, password)
-                    .addOnSuccessListener((AuthResult auth) -> {
-                        String uid = auth.getUser().getUid();
-                        addStaffRecord(uid, first, last, email, phone, pos, dept);
-                    })
-                    .addOnFailureListener(e ->
-                            Toast.makeText(getContext(),
-                                    "Auth failed: " + e.getMessage(),
-                                    Toast.LENGTH_LONG).show()
-                    );
+                    .addOnSuccessListener((AuthResult auth) -> addStaffRecord(auth.getUser().getUid(), first, last, email, phone, pos, dept))
+                    .addOnFailureListener(e -> Toast.makeText(requireContext(), getString(R.string.auth_failed, e.getMessage()), Toast.LENGTH_LONG).show());
         } else {
             updateStaff(first, last, email, phone, pos, dept);
         }
     }
 
-    private void addStaffRecord(
-            String uid, String first, String last, String email,
-            String phone, String position, String department
-    ) {
-        Map<String, Object> data = new HashMap<>();
-        data.put("uniqueId",   uid);
-        data.put("firstName",  first);
-        data.put("lastName",   last);
-        data.put("email",      email);
-        data.put("phone",      phone);
-        data.put("position",   position);
+    private void addStaffRecord(String uid, String first, String last, String email,
+                                String phone, String position, String department) {
+        Map<String,Object> data = new HashMap<>();
+        data.put("firstName", first);
+        data.put("lastName", last);
+        data.put("email", email);
+        data.put("phone", phone);
+        data.put("position", position);
         data.put("department", department);
-        data.put("role",       "staff");        // ← add this
-        data.put("registeredAt", Timestamp.now()); // optionally add timestamp if your model has it
+        data.put("role", "staff");
+        data.put("registeredAt", Timestamp.now());
 
         db.collection("users").document(uid)
                 .set(data)
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(getContext(), "Staff added", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), R.string.staff_added, Toast.LENGTH_SHORT).show();
                     resetForm();
                     loadStaff();
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getContext(),
-                                "Firestore failed: " + e.getMessage(),
-                                Toast.LENGTH_LONG).show()
-                );
+                .addOnFailureListener(e -> Toast.makeText(requireContext(), getString(R.string.firestore_failed, e.getMessage()), Toast.LENGTH_LONG).show());
     }
 
-
-    private void updateStaff(
-            String first, String last, String email,
-            String phone, String position, String department
-    ) {
-        Map<String, Object> upd = new HashMap<>();
-        upd.put("firstName",  first);
-        upd.put("lastName",   last);
-        upd.put("email",      email);
-        upd.put("phone",      phone);
-        upd.put("position",   position);
+    private void updateStaff(String first, String last, String email,
+                             String phone, String position, String department) {
+        Map<String,Object> upd = new HashMap<>();
+        upd.put("firstName", first);
+        upd.put("lastName", last);
+        upd.put("email", email);
+        upd.put("phone", phone);
+        upd.put("position", position);
         upd.put("department", department);
 
         db.collection("users").document(selectedId)
                 .update(upd)
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(getContext(), "Staff updated", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), R.string.staff_updated, Toast.LENGTH_SHORT).show();
                     resetForm();
                     loadStaff();
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getContext(),
-                                "Error: " + e.getMessage(),
-                                Toast.LENGTH_LONG).show()
-                );
+                .addOnFailureListener(e -> Toast.makeText(requireContext(), getString(R.string.update_failed, e.getMessage()), Toast.LENGTH_LONG).show());
     }
 
     private void deleteStaff() {
         if (selectedId == null) {
-            Toast.makeText(getContext(), "Select staff first", Toast.LENGTH_SHORT).show();
+            Toast.makeText(requireContext(), R.string.select_staff_first, Toast.LENGTH_SHORT).show();
             return;
         }
         db.collection("users").document(selectedId)
                 .delete()
                 .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(getContext(), "Deleted", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(requireContext(), R.string.deleted, Toast.LENGTH_SHORT).show();
                     resetForm();
                     loadStaff();
                 })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getContext(),
-                                "Delete failed: " + e.getMessage(),
-                                Toast.LENGTH_LONG).show()
-                );
+                .addOnFailureListener(e -> Toast.makeText(requireContext(), getString(R.string.delete_failed, e.getMessage()), Toast.LENGTH_LONG).show());
     }
 
     private void loadStaff() {
         staffList.clear();
-        db.collection("users")
-                .whereEqualTo("role", "staff")
+        db.collection("users").whereEqualTo("role", "staff")
                 .get()
                 .addOnSuccessListener(snapshot -> {
-                    List<Staff> list = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : snapshot) {
                         Staff s = doc.toObject(Staff.class);
                         s.setUniqueId(doc.getId());
-                        list.add(s);
+                        staffList.add(s);
                     }
-                    adapter.setStaff(list);
+                    adapter.setStaff(staffList);
                 });
     }
 
     private void resetForm() {
         selectedId = null;
-        etFirst   .setText("");
-        etLast    .setText("");
-        etEmail   .setText("");
-        etPassword.setText("");
-        etPhone   .setText("");
-        etPosition.setText("");
-        etDepartment.setText("");
+        binding.etStaffFirst.setText("");
+        binding.etStaffLast.setText("");
+        binding.etStaffEmail.setText("");
+        binding.etStaffPassword.setText("");
+        binding.etStaffPhone.setText("");
+        binding.etStaffPosition.setText("");
+        binding.etStaffDept.setText("");
 
-        btnAction.setText(R.string.action_add_staff);
-        btnDelete.setVisibility(View.GONE);
+        binding.btnStaffAction.setText(R.string.action_add_staff);
+        binding.btnStaffDelete.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }
