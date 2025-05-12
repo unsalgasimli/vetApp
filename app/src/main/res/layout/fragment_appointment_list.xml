@@ -1,32 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/appointments_coordinator"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp">
 
-    <!-- RecyclerView for listing appointments -->
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerAppointments"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:clipToPadding="false"
+        android:paddingTop="20dp"
         android:paddingBottom="72dp"
-        android:layout_marginTop="20dp"
         app:layout_behavior="@string/appbar_scrolling_view_behavior" />
 
-    <!-- FloatingActionButton to add a new appointment -->
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabAddAppointment"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="16dp"
         android:contentDescription="@string/add_appointment"
-        app:srcCompat="@drawable/ic_add_appointment"
         android:tint="@android:color/white"
         app:layout_anchor="@id/recyclerAppointments"
         app:layout_anchorGravity="bottom|end"
-        android:layout_margin="16dp" />
+        app:srcCompat="@drawable/ic_add_appointment" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

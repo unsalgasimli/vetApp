@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
@@ -20,7 +19,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.unsalGasimliApplicationsNSUG.vetapp.R;
-import com.unsalGasimliApplicationsNSUG.vetapp.data.PrescriptionRepository;
+import com.unsalGasimliApplicationsNSUG.vetapp.data.repository.PrescriptionRepository;
 import com.unsalGasimliApplicationsNSUG.vetapp.data.model.Prescription;
 import com.unsalGasimliApplicationsNSUG.vetapp.data.model.User;
 

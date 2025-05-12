@@ -4,36 +4,33 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="16dp"
+    android:layout_marginTop="20dp"
     app:cardCornerRadius="12dp"
     app:cardElevation="6dp"
-    app:cardUseCompatPadding="true"
-    android:layout_marginTop="20dp"
-    >
+    app:cardUseCompatPadding="true">
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:fillViewport="true"
-        android:padding="16dp"
-        >
+        android:padding="16dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
-            <!-- Appointment Type -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilType"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Appointment Type"
+                android:hint="@string/appointment_type_hint"
                 app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="8dp"
                 app:boxCornerRadiusTopEnd="8dp"
-                app:layout_constraintTop_toTopOf="parent"
+                app:boxCornerRadiusTopStart="8dp"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <Spinner
                     android:id="@+id/spinnerTypes"
@@ -42,20 +39,19 @@
                     android:spinnerMode="dropdown" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Doctor Selection -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilDoctor"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Select Doctor"
+                android:layout_marginTop="12dp"
+                android:hint="@string/select_doctor_hint"
                 app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="8dp"
                 app:boxCornerRadiusTopEnd="8dp"
-                app:layout_constraintTop_toBottomOf="@id/tilType"
-                app:layout_constraintStart_toStartOf="parent"
+                app:boxCornerRadiusTopStart="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="12dp">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tilType">
 
                 <Spinner
                     android:id="@+id/spinnerDoctors"
@@ -64,64 +60,59 @@
                     android:spinnerMode="dropdown" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Date Picker -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilDate"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Date"
+                android:layout_marginTop="12dp"
+                android:hint="@string/date_hint"
                 app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="8dp"
                 app:boxCornerRadiusTopEnd="8dp"
-                app:layout_constraintTop_toBottomOf="@id/tilDoctor"
-                app:layout_constraintStart_toStartOf="parent"
+                app:boxCornerRadiusTopStart="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="12dp">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tilDoctor">
 
                 <EditText
                     android:id="@+id/etDate"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
-                    />
+                    android:focusable="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Time Picker -->
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/tilTime"
                 style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:hint="Time"
+                android:layout_marginTop="12dp"
+                android:hint="@string/time_hint"
                 app:boxBackgroundMode="outline"
-                app:boxCornerRadiusTopStart="8dp"
                 app:boxCornerRadiusTopEnd="8dp"
-                app:layout_constraintTop_toBottomOf="@id/tilDate"
-                app:layout_constraintStart_toStartOf="parent"
+                app:boxCornerRadiusTopStart="8dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                android:layout_marginTop="12dp">
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/tilDate">
 
                 <EditText
                     android:id="@+id/etTime"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:focusable="false"
-                />
+                    android:focusable="false" />
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Submit Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSubmit"
                 style="@style/Widget.MaterialComponents.Button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Request Appointment"
-                android:textAllCaps="false"
                 android:layout_marginTop="24dp"
-                app:layout_constraintTop_toBottomOf="@id/tilTime"
+                android:text="@string/request_appointment_button"
+                android:textAllCaps="false"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintTop_toBottomOf="@id/tilTime" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.core.widget.NestedScrollView>

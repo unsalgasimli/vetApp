@@ -32,7 +32,7 @@ public class AppointmentListFragment extends Fragment {
         fabPresc   = v.findViewById(R.id.fabAddPrescription);
 
         adapter = new AppointmentAdapter(a -> {
-            // handle tap on existing appointment if needed
+
         });
         recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
         recycler.setAdapter(adapter);

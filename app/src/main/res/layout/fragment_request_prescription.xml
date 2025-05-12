@@ -1,54 +1,54 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
-    android:padding="16dp"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
 
-    <!-- Allow doctor to select which patient to prescribe for -->
     <Spinner
         android:id="@+id/spinnerPatients"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        />
+        android:paddingTop="50dp"
+        android:prompt="@string/prescription_select_patient_prompt"/>
 
     <EditText
         android:id="@+id/etPrescriptionName"
-        android:hint="Medication name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:hint="@string/prescription_medication_hint"/>
 
     <EditText
         android:id="@+id/etFrequency"
-        android:hint="Frequency"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:hint="@string/prescription_frequency_hint"/>
 
     <EditText
         android:id="@+id/etStartDate"
-        android:hint="Start date (YYYY-MM-DD)"
-        android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:focusable="false"
+        android:hint="@string/prescription_start_date_hint"/>
 
     <EditText
         android:id="@+id/etEndDate"
-        android:hint="End date (YYYY-MM-DD)"
-        android:focusable="false"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp" />
+        android:layout_marginTop="8dp"
+        android:focusable="false"
+        android:hint="@string/prescription_end_date_hint"/>
 
     <Button
         android:id="@+id/btnPrescribe"
-        android:text="Save Prescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp" />
+        android:layout_marginTop="16dp"
+        android:text="@string/save_prescription_button"/>
 
 </LinearLayout>

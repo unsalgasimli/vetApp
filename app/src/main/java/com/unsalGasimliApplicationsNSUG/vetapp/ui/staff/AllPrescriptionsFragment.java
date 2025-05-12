@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.unsalGasimliApplicationsNSUG.vetapp.R;
-import com.unsalGasimliApplicationsNSUG.vetapp.data.PrescriptionRepository;
+import com.unsalGasimliApplicationsNSUG.vetapp.data.repository.PrescriptionRepository;
 import com.unsalGasimliApplicationsNSUG.vetapp.data.model.Prescription;
 import com.unsalGasimliApplicationsNSUG.vetapp.ui.prescriptions.PrescriptionAdapter;
 import com.unsalGasimliApplicationsNSUG.vetapp.ui.prescriptions.RequestPrescriptionFragment;

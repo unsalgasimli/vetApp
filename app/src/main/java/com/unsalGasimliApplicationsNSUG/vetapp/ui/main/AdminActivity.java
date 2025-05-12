@@ -21,14 +21,14 @@ public class AdminActivity extends AppCompatActivity {
 
         bottomNavigationView = findViewById(R.id.bottomNavigationView);
 
-        // Swap between Patients and Staff fragments
+
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selected;
             int id = item.getItemId();
 
             if (id == R.id.nav_patient) {
                 selected = new ManagePatientFragment();
-            } else {  // R.id.nav_staff
+            } else {
                 selected = new ManageStaffFragment();
             }
 

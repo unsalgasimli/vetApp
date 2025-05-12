@@ -16,7 +16,6 @@
         android:layout_height="wrap_content"
         android:padding="16dp">
 
-        <!-- Patient Name -->
         <TextView
             android:id="@+id/tvName"
             android:layout_width="0dp"
@@ -27,7 +26,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Email -->
         <TextView
             android:id="@+id/tvEmail"
             android:layout_width="0dp"
@@ -39,7 +37,6 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvName" />
 
-        <!-- Phone -->
         <TextView
             android:id="@+id/tvPhone"
             android:layout_width="0dp"
@@ -51,7 +48,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@id/tvEmail" />
 
-        <!-- Date of Birth -->
+
         <TextView
             android:id="@+id/tvDob"
             android:layout_width="0dp"

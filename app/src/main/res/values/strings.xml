@@ -12,29 +12,18 @@
     <string name="pet_age">Age:</string>
     <string name="add_pet">Add Pet</string>
     <string name="update_pet">Update Pet</string>
-
     <string name="filter_from_date">From Date</string>
     <string name="filter_to_date">To Date</string>
-
     <string name="select_patient">Select Patient</string>
-
-    <!-- FAB content descriptions -->
     <string name="action_add_staff">Add Staff</string>
     <string name="action_update_staff">Update Staff</string>
-    <!-- for the button texts -->
     <string name="add_item">Add Item</string>
     <string name="add">Add</string>
     <string name="update">Update</string>
     <string name="dismiss">Dismiss</string>
-
-
     <string name="from_date">From date</string>
     <string name="to_date">To date</string>
     <string name="add_appointment">Add appointment</string>
-
-    <!-- Appointment types -->
-
-    <!-- Authentication -->
     <string name="welcome_back">Welcome Back</string>
     <string name="login">Log in</string>
     <string name="register">Register</string>
@@ -42,22 +31,53 @@
     <string name="auth_failed">Authentication failed: %1$s</string>
     <string name="user_not_found">User record not found</string>
     <string name="failed_load_user">Failed to load user data: %1$s</string>
-
-        <string name="title_reservations">Your Appointments</string>
+    <string name="title_reservations">Your Appointments</string>
+    <string name="sign_in_account">Sign in to your account</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="staff_first_name_hint">First Name</string>
+    <string name="staff_last_name_hint">Last Name</string>
+    <string name="staff_email_hint">Email</string>
+    <string name="staff_password_hint">Password</string>
+    <string name="staff_phone_hint">Phone</string>
+    <string name="staff_position_hint">Position</string>
+    <string name="staff_department_hint">Department</string>
+    <string name="profile_first_name_hint">First Name</string>
+    <string name="profile_last_name_hint">Last Name</string>
+    <string name="profile_phone_hint">Phone</string>
+    <string name="profile_dob_hint">Date of Birth</string>
+    <string name="profile_email_hint">Email</string>
+    <string name="register_title">Create Account</string>
+    <string name="first_name_hint">First Name</string>
+    <string name="last_name_hint">Last Name</string>
+    <string name="appointment_type_hint">Appointment Type</string>
+    <string name="select_doctor_hint">Select Doctor</string>
+    <string name="date_hint">Date</string>
+    <string name="time_hint">Time</string>
+    <string name="request_appointment_button">Request Appointment</string>
+    <string name="prescription_select_patient_prompt">Select Patient</string>
+    <string name="prescription_medication_hint">Medication name</string>
+    <string name="prescription_frequency_hint">Frequency</string>
+    <string name="prescription_start_date_hint">Start date (YYYY-MM-DD)</string>
+    <string name="prescription_end_date_hint">End date (YYYY-MM-DD)</string>
+    <string name="save_prescription_button">Save Prescription</string>
+    <string name="example_name">John Doe</string>
+    <string name="example_email">email@example.com</string>
+    <string name="example_position">Veterinarian</string>
+    <string name="example_department">Surgery</string>
+    <string name="phone_hint">Phone</string>
+    <string name="dob_hint">Date of Birth</string>
+    <string name="confirm_password_hint">Confirm Password</string>
+    <string name="save_profile_button">Save</string>
+    <string name="add_staff_button">Add Staff</string>
+    <string name="delete_staff_button">Delete Staff</string>
+    <string name="login_button">Log in</string>
+    <string name="register_button">Register</string>
     <string-array name="filter_types">
         <item>All</item>
         <item>Check-up</item>
         <item>Surgery</item>
-        <!-- etc. -->
     </string-array>
-
-    <string-array name="filter_patients">
-        <item>All</item>
-        <item>John Doe</item>
-        <item>Jane Roe</item>
-        <!-- etc. -->
-    </string-array>
-
     <string-array name="appointment_types">
         <item>Consultation</item>
         <item>Vaccination</item>
@@ -69,14 +89,8 @@
     <string name="medication">Medication</string>
     <string name="dosage">Dosage</string>
     <string name="submit_prescription">Submit Prescription</string>
-
-
-
-
-    <!-- item labels -->
-        <string name="type_checkup">Check-up</string>
-        <string name="type_vaccination">Vaccination</string>
-        <!-- add more as needed -->
+    <string name="type_checkup">Check-up</string>
+    <string name="type_vaccination">Vaccination</string>
     <string name="hint_first_name">First name</string>
     <string name="filter_title">Filter reservations</string>
     <string name="hint_last_name">Last name</string>
@@ -87,11 +101,11 @@
     <string name="hint_confirm_password">Confirm password</string>
     <string name="action_add_patient">Add Patient</string>
     <string name="action_update_patient">Update Patient</string>
-    <string name="action_delete_patient">Delete Patient</string><string name="hint_new_password">New Password (min. 6 chars)</string>
+    <string name="action_delete_patient">Delete Patient</string>
+    <string name="hint_new_password">New Password (min. 6 chars)</string>
     <string name="action_change_password">Change Password</string>
     <string name="filter_by_patient">Filter by Patient</string>
     <string name="add_prescription">Add Prescription</string>
-
 
 
 </resources>

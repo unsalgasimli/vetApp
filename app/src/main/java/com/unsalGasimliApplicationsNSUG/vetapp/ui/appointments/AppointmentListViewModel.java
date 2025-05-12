@@ -11,7 +11,7 @@ public class AppointmentListViewModel extends ViewModel {
     private final MutableLiveData<List<Appointment>> appointments = new MutableLiveData<>();
 
     public AppointmentListViewModel() {
-        // TODO: replace with real patient ID
+
         String patientId = "CURRENT_PATIENT_ID";
         new AppointmentRepository()
                 .fetchAppointments(patientId, new AppointmentRepository.Callback<List<Appointment>>() {

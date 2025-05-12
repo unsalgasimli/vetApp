@@ -12,10 +12,10 @@ public class Staff {
     private String position;
     private String department;
 
-    // No-arg constructor required by Firestore
+
     public Staff() { }
 
-    // (Optional) Full constructor
+
     public Staff(String uniqueId,
                  String firstName,
                  String lastName,
@@ -32,7 +32,7 @@ public class Staff {
         this.department= department;
     }
 
-    // Getter & Setter for uniqueId
+
     public String getUniqueId() {
         return uniqueId;
     }
@@ -40,7 +40,7 @@ public class Staff {
         this.uniqueId = uniqueId;
     }
 
-    // Other getters & setters
+
     public String getFirstName() {
         return firstName;
     }

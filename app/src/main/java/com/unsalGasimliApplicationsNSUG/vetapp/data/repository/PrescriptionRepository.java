@@ -1,5 +1,5 @@
 // File: app/src/main/java/com/unsalGasimliApplicationsNSUG/vetapp/data/PrescriptionRepository.java
-package com.unsalGasimliApplicationsNSUG.vetapp.data;
+package com.unsalGasimliApplicationsNSUG.vetapp.data.repository;
 
 import androidx.annotation.NonNull;
 
@@ -22,7 +22,6 @@ public class PrescriptionRepository {
 
     private final FirebaseFirestore db = FirebaseFirestore.getInstance();
 
-    /** Save a new prescription under /users/{patientId}/prescriptions */
     public void create(@NonNull Prescription p,
                        @NonNull Callback<Void> cb) {
         CollectionReference col = db
@@ -36,7 +35,7 @@ public class PrescriptionRepository {
                 .addOnFailureListener(cb::onError);
     }
 
-    /** Fetch prescriptions for a specific patient */
+
     public void fetchForPatient(@NonNull String patientId,
                                 @NonNull Callback<List<Prescription>> cb) {
         db.collection("users")
@@ -56,7 +55,7 @@ public class PrescriptionRepository {
                 .addOnFailureListener(cb::onError);
     }
 
-    /** Fetch prescriptions created by a specific doctor across all patients */
+
     public void fetchForDoctor(@NonNull String doctorId,
                                @NonNull Callback<List<Prescription>> cb) {
         db.collectionGroup("prescriptions")
@@ -75,7 +74,7 @@ public class PrescriptionRepository {
                 .addOnFailureListener(cb::onError);
     }
 
-    /** Fetch all prescriptions across all patients */
+
     public void fetchAllPrescriptions(@NonNull Callback<List<Prescription>> cb) {
         db.collectionGroup("prescriptions")
                 .orderBy("dateTimestamp", Query.Direction.ASCENDING)
@@ -92,7 +91,7 @@ public class PrescriptionRepository {
                 .addOnFailureListener(cb::onError);
     }
 
-    /** Delete a prescription by patientId and prescriptionId */
+
     public void deletePrescription(@NonNull String patientId,
                                    @NonNull String prescriptionId,
                                    @NonNull Callback<Void> cb) {
@@ -111,7 +110,7 @@ public class PrescriptionRepository {
                 .document(p.getPatientId())
                 .collection("prescriptions")
                 .document(p.getId())
-                .set(p)                          // overwrite with new fields
+                .set(p)
                 .addOnSuccessListener(__ -> cb.onSuccess(null))
                 .addOnFailureListener(cb::onError);
     }

@@ -18,11 +18,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.unsalGasimliApplicationsNSUG.vetapp.R;
-import com.unsalGasimliApplicationsNSUG.vetapp.data.PrescriptionRepository;
+import com.unsalGasimliApplicationsNSUG.vetapp.data.repository.PrescriptionRepository;
 import com.unsalGasimliApplicationsNSUG.vetapp.data.model.Prescription;
 import com.unsalGasimliApplicationsNSUG.vetapp.data.model.User;
 

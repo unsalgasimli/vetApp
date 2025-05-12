@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app   ="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
@@ -27,38 +27,35 @@
             android:showDividers="middle"
             android:dividerPadding="12dp">
 
-            <!-- First Name -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.VetApp.TextInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="First Name">
+                android:hint="@string/profile_first_name_hint">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etFirstName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Last Name -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.VetApp.TextInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="Last Name">
+                android:hint="@string/profile_last_name_hint">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etLastName"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Phone -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.VetApp.TextInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="Phone">
+                android:hint="@string/profile_phone_hint">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPhone"
                     android:layout_width="match_parent"
@@ -66,13 +63,12 @@
                     android:inputType="phone"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- DOB -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.VetApp.TextInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="Date of Birth">
+                android:hint="@string/profile_dob_hint">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etDOB"
                     android:layout_width="match_parent"
@@ -80,13 +76,12 @@
                     android:inputType="date"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Email (read-only) -->
             <com.google.android.material.textfield.TextInputLayout
                 style="@style/Widget.VetApp.TextInput"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="12dp"
-                android:hint="Email">
+                android:hint="@string/profile_email_hint">
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etEmail"
                     android:layout_width="match_parent"
@@ -95,14 +90,14 @@
                     android:enabled="false"/>
             </com.google.android.material.textfield.TextInputLayout>
 
-            <!-- Save button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnSaveProfile"
                 style="@style/Widget.VetApp.Button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Save"/>
+                android:text="@string/save_profile_button"/>
+
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 </androidx.constraintlayout.widget.ConstraintLayout>

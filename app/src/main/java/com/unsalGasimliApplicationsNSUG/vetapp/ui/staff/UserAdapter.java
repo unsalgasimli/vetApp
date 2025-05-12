@@ -40,7 +40,6 @@ public class UserAdapter extends RecyclerView.Adapter<UserAdapter.VH> {
     @Override
     public void onBindViewHolder(@NonNull VH holder, int position) {
         User u = users.get(position);
-        // Display by first + last name (adjust if your User has a displayName)
         holder.name.setText(u.getFirstName() + " " + u.getLastName());
         holder.itemView.setOnClickListener(v -> listener.onItemClick(u));
     }

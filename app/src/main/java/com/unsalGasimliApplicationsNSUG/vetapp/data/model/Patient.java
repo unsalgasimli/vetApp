@@ -22,7 +22,7 @@ public class Patient {
     private String role;
     private Timestamp registeredAt;
 
-    public Patient() { /* Firestore */ }
+    public Patient() { }
 
     public String getUniqueId()        { return uniqueId; }
     public void   setUniqueId(String id) { this.uniqueId = id; }

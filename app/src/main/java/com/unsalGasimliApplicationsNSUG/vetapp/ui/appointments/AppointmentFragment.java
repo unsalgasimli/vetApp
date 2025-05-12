@@ -35,9 +35,7 @@ public class AppointmentFragment extends Fragment {
     private FloatingActionButton fabAddPrescription;
     private AppointmentAdapter adapter;
 
-    /**
-     * Create a new fragment instance for a specific patient.
-     */
+
     public static AppointmentFragment newInstance(@NonNull String patientId) {
         AppointmentFragment frag = new AppointmentFragment();
         Bundle args = new Bundle();
@@ -72,7 +70,6 @@ public class AppointmentFragment extends Fragment {
         fabAddAppointment  = view.findViewById(R.id.fabAddAppointment);
         fabAddPrescription = view.findViewById(R.id.fabAddPrescription);
 
-        // ◀︎ NEW: fetch current user's role and show the prescription FAB for doctors
         String currentUid = FirebaseAuth.getInstance().getUid();
         if (currentUid != null) {
             FirebaseFirestore.getInstance()
@@ -92,7 +89,7 @@ public class AppointmentFragment extends Fragment {
 
 
 
-        // Setup RecyclerView
+
         adapter = new AppointmentAdapter(appt -> {
 
         });
@@ -118,7 +115,7 @@ public class AppointmentFragment extends Fragment {
             return;
         }
 
-        // Load appointments from Firestore
+
         new AppointmentRepository()
                 .fetchAll(patientId, new AppointmentRepository.Callback<List<Appointment>>() {
                     @Override

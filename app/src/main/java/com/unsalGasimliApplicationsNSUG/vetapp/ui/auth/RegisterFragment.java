@@ -30,13 +30,13 @@ public class RegisterFragment extends Fragment {
     private FirebaseFirestore db;
 
     public RegisterFragment() {
-        // Required empty public constructor
+
     }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment (fragment_register.xml)
+
         View view = inflater.inflate(R.layout.fragment_register, container, false);
 
         mAuth = FirebaseAuth.getInstance();
@@ -102,8 +102,8 @@ public class RegisterFragment extends Fragment {
                                     .addOnSuccessListener(aVoid -> {
                                         Toast.makeText(getContext(), "Registration successful!", Toast.LENGTH_SHORT).show();
 
-                                        // Navigate to LoginFragment after registration success
-                                        Fragment loginFragment = new LoginFragment(); // Replace with your target fragment
+
+                                        Fragment loginFragment = new LoginFragment();
                                         getParentFragmentManager()
                                                 .beginTransaction()
                                                 .replace(R.id.auth_fragment_container, loginFragment)

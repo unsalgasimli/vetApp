@@ -38,7 +38,7 @@ public class PatientDataFragment extends Fragment {
     ) {
         View v = inflater.inflate(R.layout.fragment_patient_data, container, false);
 
-        // init Firestore + current user
+
         db = FirebaseFirestore.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
@@ -47,7 +47,7 @@ public class PatientDataFragment extends Fragment {
         }
         uid = user.getUid();
 
-        // bind views
+
         etFirst = v.findViewById(R.id.etFirstName);
         etLast  = v.findViewById(R.id.etLastName);
         etPhone = v.findViewById(R.id.etPhone);
@@ -55,10 +55,10 @@ public class PatientDataFragment extends Fragment {
         etEmail = v.findViewById(R.id.etEmail);
         btnSave = v.findViewById(R.id.btnSaveProfile);
 
-        // load existing data
+
         loadProfile();
 
-        // save listener
+
         btnSave.setOnClickListener(x -> saveProfile());
 
         return v;

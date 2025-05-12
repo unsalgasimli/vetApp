@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app   ="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
+    android:clickable="true"
+    android:focusable="true"
+    android:foreground="?attr/selectableItemBackground"
     app:cardCornerRadius="8dp"
     app:cardElevation="4dp"
-    app:cardUseCompatPadding="true"
-    android:foreground="?attr/selectableItemBackground"
-    android:clickable="true"
-    android:focusable="true">
+    app:cardUseCompatPadding="true">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -18,55 +18,51 @@
         android:padding="16dp"
         app:layout_constraintHorizontal_chainStyle="spread">
 
-        <!-- Name -->
         <TextView
             android:id="@+id/textViewName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="John Doe"
+            android:text="@string/example_name"
             android:textAppearance="@style/TextAppearance.MaterialComponents.TitleMedium"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toStartOf="@id/textViewEmail"
-            app:layout_constraintHorizontal_weight="1"/>
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Email -->
         <TextView
             android:id="@+id/textViewEmail"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="email@example.com"
+            android:text="@string/example_email"
             android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
-            app:layout_constraintStart_toEndOf="@id/textViewName"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintHorizontal_weight="1"/>
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/textViewName"
+            app:layout_constraintTop_toTopOf="parent" />
 
-        <!-- Position -->
         <TextView
             android:id="@+id/textViewPosition"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Veterinarian"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
             android:layout_marginTop="8dp"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/textViewName"
+            android:text="@string/example_position"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
             app:layout_constraintEnd_toStartOf="@id/textViewDepartment"
-            app:layout_constraintHorizontal_weight="1"/>
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/textViewName" />
 
-        <!-- Department -->
         <TextView
             android:id="@+id/textViewDepartment"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Surgery"
-            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
             android:layout_marginTop="8dp"
-            app:layout_constraintStart_toEndOf="@id/textViewPosition"
-            app:layout_constraintTop_toBottomOf="@id/textViewEmail"
+            android:text="@string/example_department"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_weight="1"/>
+            app:layout_constraintHorizontal_weight="1"
+            app:layout_constraintStart_toEndOf="@id/textViewPosition"
+            app:layout_constraintTop_toBottomOf="@id/textViewEmail" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>

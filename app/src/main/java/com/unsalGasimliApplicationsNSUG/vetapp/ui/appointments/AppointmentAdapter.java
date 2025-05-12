@@ -44,7 +44,6 @@ public class AppointmentAdapter
         h.txtType.setText(a.getType());
         h.txtCounterparty.setText(a.getDoctorName());
 
-        // Format the server timestamp into "yyyy-MM-dd HH:mm"
         Timestamp ts = a.getDateTime();
         if (ts != null) {
             Date date = ts.toDate();
