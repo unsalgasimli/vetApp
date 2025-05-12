@@ -1,30 +1,28 @@
+// app/src/main/java/com/unsalGasimliApplicationsNSUG/vetapp/ui/appointments/AppointmentListViewModel.java
 package com.unsalGasimliApplicationsNSUG.vetapp.ui.appointments;
 
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
-import androidx.lifecycle.ViewModel;
-import com.unsalGasimliApplicationsNSUG.vetapp.data.repository.AppointmentRepository;
+import androidx.lifecycle.*;
 import com.unsalGasimliApplicationsNSUG.vetapp.data.model.Appointment;
+import com.unsalGasimliApplicationsNSUG.vetapp.data.repository.AppointmentRepository;
+
 import java.util.List;
 
 public class AppointmentListViewModel extends ViewModel {
+    private final AppointmentRepository repo = new AppointmentRepository();
     private final MutableLiveData<List<Appointment>> appointments = new MutableLiveData<>();
+    private final MutableLiveData<String> error = new MutableLiveData<>();
 
-    public AppointmentListViewModel() {
+    public LiveData<List<Appointment>> getAppointments() { return appointments; }
+    public LiveData<String> getError()            { return error;        }
 
-        String patientId = "CURRENT_PATIENT_ID";
-        new AppointmentRepository()
-                .fetchAppointments(patientId, new AppointmentRepository.Callback<List<Appointment>>() {
-                    @Override public void onSuccess(List<Appointment> data) {
-                        appointments.postValue(data);
-                    }
-                    @Override public void onError(Throwable error) {
-                        // TODO: error handling
-                    }
-                });
-    }
-
-    public LiveData<List<Appointment>> getAppointments() {
-        return appointments;
+    public void loadAppointments(String patientId) {
+        repo.fetchForPatient(patientId, new AppointmentRepository.Callback<List<Appointment>>() {
+            @Override public void onSuccess(List<Appointment> data) {
+                appointments.postValue(data);
+            }
+            @Override public void onError(Throwable t) {
+                error.postValue(t.getMessage());
+            }
+        });
     }
 }

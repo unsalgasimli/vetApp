@@ -1,83 +1,67 @@
 package com.unsalGasimliApplicationsNSUG.vetapp.ui.staff;
 
+import android.annotation.SuppressLint;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.unsalGasimliApplicationsNSUG.vetapp.R;
 import com.unsalGasimliApplicationsNSUG.vetapp.data.model.Staff;
+import com.unsalGasimliApplicationsNSUG.vetapp.databinding.ItemStaffBinding;
 
-import java.util.ArrayList;
-import java.util.List;
+public class StaffAdapter
+        extends ListAdapter<Staff, StaffAdapter.VH> {
 
-/**
- * Adapter for displaying a list of Staff objects in RecyclerView.
- */
-public class StaffAdapter extends RecyclerView.Adapter<StaffAdapter.VH> {
     public interface OnItemClickListener {
-        void onItemClick(@NonNull Staff staff);
+        void onClick(Staff s);
     }
 
-    private final List<Staff> staff = new ArrayList<>();
-    @Nullable private OnItemClickListener listener;
+    private final OnItemClickListener listener;
 
-    public StaffAdapter(@Nullable List<Staff> initial) {
-        if (initial != null) staff.addAll(initial);
+    public StaffAdapter(OnItemClickListener listener) {
+        super(DIFF);
+        this.listener = listener;
     }
 
-    public void setStaff(@NonNull List<Staff> newList) {
-        staff.clear();
-        staff.addAll(newList);
-        notifyDataSetChanged();
-    }
-
-    public void setOnItemClickListener(@Nullable OnItemClickListener l) {
-        listener = l;
-    }
+    private static final DiffUtil.ItemCallback<Staff> DIFF =
+            new DiffUtil.ItemCallback<Staff>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull Staff a, @NonNull Staff b) {
+                    return a.getUniqueId().equals(b.getUniqueId());
+                }
+                @SuppressLint("DiffUtilEquals")
+                @Override
+                public boolean areContentsTheSame(@NonNull Staff a, @NonNull Staff b) {
+                    return a.equals(b);
+                }
+            };
 
     @NonNull @Override
-    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_staff, parent, false);
-        return new VH(v);
+    public VH onCreateViewHolder(@NonNull ViewGroup p, int vt) {
+        ItemStaffBinding b = ItemStaffBinding.inflate(
+                LayoutInflater.from(p.getContext()), p, false
+        );
+        return new VH(b);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull VH holder, int pos) {
-        Staff s = staff.get(pos);
-        holder.name.setText(s.getFirstName() + " " + s.getLastName());
-        holder.email.setText(s.getEmail());
-        holder.position.setText(s.getPosition());
-        holder.department.setText(s.getDepartment());
-
-        if (listener != null) {
-            holder.itemView.setOnClickListener(v -> listener.onItemClick(s));
-        } else {
-            holder.itemView.setOnClickListener(null);
-        }
-    }
-
-    @Override public int getItemCount() {
-        return staff.size();
+    public void onBindViewHolder(@NonNull VH h, int pos) {
+        Staff s = getItem(pos);
+        h.binding.textViewName     .setText(s.getFirstName() + " " + s.getLastName());
+        h.binding.textViewEmail    .setText(s.getEmail());
+        h.binding.textViewPosition .setText(s.getPosition());
+        h.binding.textViewDepartment.setText(s.getDepartment());
+        h.binding.getRoot().setOnClickListener(v -> listener.onClick(s));
     }
 
     static class VH extends RecyclerView.ViewHolder {
-        final TextView name;
-        final TextView email;
-        final TextView position;
-        final TextView department;
-
-        VH(View itemView) {
-            super(itemView);
-            name = itemView.findViewById(R.id.textViewName);
-            email = itemView.findViewById(R.id.textViewEmail);
-            position = itemView.findViewById(R.id.textViewPosition);
-            department = itemView.findViewById(R.id.textViewDepartment);
+        final ItemStaffBinding binding;
+        VH(ItemStaffBinding b) {
+            super(b.getRoot());
+            binding = b;
         }
     }
 }

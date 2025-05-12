@@ -1,4 +1,3 @@
-// File: app/src/main/java/com/unsalGasimliApplicationsNSUG/vetapp/ui/staff/AllPrescriptionsFragment.java
 package com.unsalGasimliApplicationsNSUG.vetapp.ui.staff;
 
 import android.os.Bundle;
@@ -15,10 +14,10 @@ import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.unsalGasimliApplicationsNSUG.vetapp.R;
-import com.unsalGasimliApplicationsNSUG.vetapp.data.repository.PrescriptionRepository;
 import com.unsalGasimliApplicationsNSUG.vetapp.data.model.Prescription;
+import com.unsalGasimliApplicationsNSUG.vetapp.data.repository.PrescriptionRepository;
+import com.unsalGasimliApplicationsNSUG.vetapp.databinding.FragmentPrescriptionsBinding;
 import com.unsalGasimliApplicationsNSUG.vetapp.ui.prescriptions.PrescriptionAdapter;
 import com.unsalGasimliApplicationsNSUG.vetapp.ui.prescriptions.RequestPrescriptionFragment;
 
@@ -28,29 +27,26 @@ import java.util.List;
 public class AllPrescriptionsFragment extends Fragment {
     private static final String TAG = "AllPrescriptionsFrag";
 
-    private RecyclerView recycler;
-    private PrescriptionAdapter adapter;
+    private FragmentPrescriptionsBinding binding;
     private final List<Prescription> items = new ArrayList<>();
-    private FloatingActionButton fabAddPrescription;
     private final PrescriptionRepository repo = new PrescriptionRepository();
+    private PrescriptionAdapter adapter;
 
-    @Nullable @Override
+    @Nullable
+    @Override
     public View onCreateView(@NonNull LayoutInflater inflater,
                              @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_prescriptions, container, false);
+        binding = FragmentPrescriptionsBinding.inflate(inflater, container, false);
+        return binding.getRoot();
     }
 
-    @Override public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        recycler = view.findViewById(R.id.recyclerPrescriptions);
-        recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.recyclerPrescriptions.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        // THIS MUST MATCH your XML: if your FAB id is "fabAdd", use R.id.fabAdd here.
-        fabAddPrescription = view.findViewById(R.id.fabAddPrescription);
-
-        // 1) Adapter with click-to-edit
         adapter = new PrescriptionAdapter(p -> {
             Fragment edit = RequestPrescriptionFragment.newInstance(p.getPatientId(), p.getId());
             requireActivity().getSupportFragmentManager()
@@ -59,43 +55,41 @@ public class AllPrescriptionsFragment extends Fragment {
                     .addToBackStack(null)
                     .commit();
         });
-        recycler.setAdapter(adapter);
+        binding.recyclerPrescriptions.setAdapter(adapter);
 
-        // 2) Swipe-to-delete
         new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(
-                /* dragDirs */ 0,
-                /* swipeDirs */ ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT
+                0,
+                ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT
         ) {
             @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView,
-                                  @NonNull RecyclerView.ViewHolder viewHolder,
-                                  @NonNull RecyclerView.ViewHolder target) {
-                // we don't support drag & drop in this list
+            public boolean onMove(@NonNull androidx.recyclerview.widget.RecyclerView recyclerView,
+                                  @NonNull androidx.recyclerview.widget.RecyclerView.ViewHolder viewHolder,
+                                  @NonNull androidx.recyclerview.widget.RecyclerView.ViewHolder target) {
                 return false;
             }
 
             @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder vh, int direction) {
-                int pos = vh.getAdapterPosition();
+            public void onSwiped(@NonNull androidx.recyclerview.widget.RecyclerView.ViewHolder vh, int direction) {
+                int pos = vh.getBindingAdapterPosition();
+                if (pos == RecyclerView.NO_POSITION) return;
                 Prescription p = items.get(pos);
                 repo.deletePrescription(p.getPatientId(), p.getId(), new PrescriptionRepository.Callback<Void>() {
-                    @Override public void onSuccess(Void data) {
-                        Toast.makeText(requireContext(), "Deleted", Toast.LENGTH_SHORT).show();
+                    @Override
+                    public void onSuccess(Void data) {
+                        Toast.makeText(requireContext(), R.string.deleted, Toast.LENGTH_SHORT).show();
                         loadData();
                     }
-                    @Override public void onError(Throwable t) {
-                        Toast.makeText(requireContext(),
-                                "Delete failed: " + t.getMessage(),
-                                Toast.LENGTH_LONG).show();
+
+                    @Override
+                    public void onError(Throwable t) {
+                        Toast.makeText(requireContext(), getString(R.string.delete_failed, t.getMessage()), Toast.LENGTH_LONG).show();
                         adapter.notifyItemChanged(pos);
                     }
                 });
             }
-        }).attachToRecyclerView(recycler);
+        }).attachToRecyclerView(binding.recyclerPrescriptions);
 
-        // 3) FAB to add new
-        fabAddPrescription.setOnClickListener(v -> {
-            // pass empty patientId if doctor will choose inside the fragment
+        binding.fabAddPrescription.setOnClickListener(v -> {
             Fragment add = RequestPrescriptionFragment.newInstance("", null);
             requireActivity().getSupportFragmentManager()
                     .beginTransaction()
@@ -104,24 +98,30 @@ public class AllPrescriptionsFragment extends Fragment {
                     .commit();
         });
 
-        // 4) initial load
         loadData();
     }
 
     private void loadData() {
         items.clear();
         repo.fetchAllPrescriptions(new PrescriptionRepository.Callback<List<Prescription>>() {
-            @Override public void onSuccess(List<Prescription> data) {
+            @Override
+            public void onSuccess(List<Prescription> data) {
                 Log.d(TAG, "Loaded " + data.size() + " prescriptions");
                 items.addAll(data);
-                adapter.setItems(items);
+                adapter.submitList(data);
             }
-            @Override public void onError(Throwable t) {
+
+            @Override
+            public void onError(Throwable t) {
                 Log.e(TAG, "Error loading prescriptions", t);
-                Toast.makeText(requireContext(),
-                        "Error: " + t.getMessage(),
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(requireContext(), getString(R.string.error_loading_prescriptions, t.getMessage()), Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

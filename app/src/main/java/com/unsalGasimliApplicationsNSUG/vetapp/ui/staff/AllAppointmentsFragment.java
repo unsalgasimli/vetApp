@@ -1,4 +1,3 @@
-// File: app/src/main/java/com/unsalGasimliApplicationsNSUG/vetapp/ui/staff/AllAppointmentsFragment.java
 package com.unsalGasimliApplicationsNSUG.vetapp.ui.staff;
 
 import android.app.AlertDialog;
@@ -6,150 +5,106 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.format.DateFormat;
-import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.annotation.*;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.*;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.Timestamp;
-import com.google.firebase.firestore.FirebaseFirestore;
 import com.unsalGasimliApplicationsNSUG.vetapp.R;
 import com.unsalGasimliApplicationsNSUG.vetapp.data.model.Appointment;
-import com.unsalGasimliApplicationsNSUG.vetapp.data.repository.AppointmentRepository;
+import com.unsalGasimliApplicationsNSUG.vetapp.databinding.FragmentAppointmentsBinding;
 import com.unsalGasimliApplicationsNSUG.vetapp.ui.appointments.AppointmentAdapter;
-import com.unsalGasimliApplicationsNSUG.vetapp.ui.appointments.RequestAppointmentFragment;
-import com.unsalGasimliApplicationsNSUG.vetapp.ui.prescriptions.RequestPrescriptionFragment;
+import com.unsalGasimliApplicationsNSUG.vetapp.ui.appointments.AppointmentViewModel;
 
 import java.util.Calendar;
 import java.util.Date;
-import java.util.List;
+
 
 public class AllAppointmentsFragment extends Fragment {
-    private static final String TAG = "AllAppointmentsFrag";
+    private FragmentAppointmentsBinding binding;
+    private AppointmentViewModel        vm;
+    private AppointmentAdapter          adapter;
 
-    private RecyclerView recycler;
-    private AppointmentAdapter adapter;
-
-    private FloatingActionButton fabAddAppointment;
-    private final AppointmentRepository repo = new AppointmentRepository();
-
-    @Nullable @Override
-    public View onCreateView(@NonNull LayoutInflater inflater,
-                             @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_appointments, container, false);
+    public AllAppointmentsFragment() {
+        super(R.layout.fragment_appointments);
     }
 
-    @Override public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle s) {
+        binding = FragmentAppointmentsBinding.bind(view);
+        vm      = new ViewModelProvider(this).get(AppointmentViewModel.class);
 
-        recycler = view.findViewById(R.id.recyclerAppointments);
-        recycler.setLayoutManager(new LinearLayoutManager(requireContext()));
-        fabAddAppointment = view.findViewById(R.id.fabAddAppointment);
-        fabAddAppointment.setVisibility(View.GONE);
         adapter = new AppointmentAdapter(this::showDecisionDialog);
-        recycler.setAdapter(adapter);
+        binding.recyclerAppointments.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.recyclerAppointments.setAdapter(adapter);
 
-
-
-        repo.fetchAllAppointments(new AppointmentRepository.Callback<List<Appointment>>() {
-            @Override public void onSuccess(List<Appointment> data) {
-                adapter.setItems(data);
-            }
-            @Override public void onError(Throwable t) {
-                Log.e(TAG, "Error loading appointments", t);
-                Toast.makeText(requireContext(),
-                        "Error loading appointments: " + t.getMessage(),
-                        Toast.LENGTH_LONG).show();
+        vm.getAppointments().observe(getViewLifecycleOwner(), list -> {
+            adapter.setItems(list);
+        });
+        vm.getMessage().observe(getViewLifecycleOwner(), msg -> {
+            if (msg != null) {
+                String[] parts = msg.split(":",2);
+                Toast.makeText(
+                        requireContext(),
+                        getStringResource(parts[0], parts.length>1?parts[1]:""),
+                        Toast.LENGTH_SHORT
+                ).show();
+                vm.clearMessage();
             }
         });
+
+        vm.loadAllAppointments();
     }
 
     private void showDecisionDialog(Appointment appt) {
-        Date ts = (appt.getDateTime() != null) ? appt.getDateTime().toDate() : new Date();
-        String formatted = DateFormat.format("yyyy-MM-dd HH:mm", ts).toString();
-        String msg = "Patient: " + appt.getPatientName() +
-                "\nDate: " + formatted;
+        Date dt = appt.getDateTime().toDate();
+        String when = DateFormat.format("yyyy-MM-dd HH:mm", dt).toString();
+        String msg = "Patient: " + appt.getPatientName() + "\nDate: " + when;
 
         new AlertDialog.Builder(requireContext())
-                .setTitle("Appointment Request")
+                .setTitle(R.string.appointment_request_title)
                 .setMessage(msg)
-                .setPositiveButton("Accept", (d,w) -> updateStatus(appt, "accepted"))
-                .setNegativeButton("Reject", (d,w) -> updateStatus(appt, "rejected"))
-                .setNeutralButton("Reschedule", (d,w) -> showRescheduleDialogs(appt))
+                .setPositiveButton(R.string.accept, (d,w)-> {
+                    appt.setStatus("accepted");
+                    vm.updateAppointment(appt);
+                })
+                .setNegativeButton(R.string.reject, (d,w)-> {
+                    appt.setStatus("rejected");
+                    vm.updateAppointment(appt);
+                })
+                .setNeutralButton(R.string.reschedule, (d,w)-> showRescheduleDialog(appt))
                 .show();
     }
 
-    private void showRescheduleDialogs(Appointment appt) {
+    private void showRescheduleDialog(Appointment appt) {
         Calendar c = Calendar.getInstance();
-        new DatePickerDialog(requireContext(), (dp, y, m, d) -> {
-            int year=y, month=m, day=d;
-            new TimePickerDialog(requireContext(), (tp, h, mm) -> {
-                // build new timestamp
-                Calendar c2 = Calendar.getInstance();
-                c2.set(year, month, day, h, mm);
-                // Convert Java Date to Firestore Timestamp
-                Date date = c2.getTime();
-                Timestamp newTs = new Timestamp(date);
-                FirebaseFirestore.getInstance()
-                        .collection("users")
-                        .document(appt.getPatientId())
-                        .collection("appointments")
-                        .document(appt.getId())
-                        .update(
-                                "dateTime", newTs,
-                                "status", "rescheduled"
-                        )
-                        .addOnSuccessListener(__ -> {
-                            String newFmt = DateFormat.format("yyyy-MM-dd HH:mm", newTs.toDate()).toString();
-                            Toast.makeText(requireContext(),
-                                    "Rescheduled to " + newFmt,
-                                    Toast.LENGTH_SHORT).show();
-                            refreshAppointments();
-                        })
-                        .addOnFailureListener(t ->
-                                Toast.makeText(requireContext(),
-                                        "Reschedule failed: " + t.getMessage(),
-                                        Toast.LENGTH_LONG).show()
-                        );
-            }, c.get(Calendar.HOUR_OF_DAY), c.get(Calendar.MINUTE), true).show();
-        }, c.get(Calendar.YEAR), c.get(Calendar.MONTH), c.get(Calendar.DAY_OF_MONTH)).show();
+        new DatePickerDialog(requireContext(),
+                (dp,y,m,d)-> {
+                    new TimePickerDialog(requireContext(),
+                            (tp,h,mm)-> {
+                                Calendar c2 = Calendar.getInstance();
+                                c2.set(y, m, d, h, mm);
+                                appt.setDateTime(new Timestamp(c2.getTime()));
+                                appt.setStatus("rescheduled");
+                                vm.updateAppointment(appt);
+                            },
+                            c.get(Calendar.HOUR_OF_DAY),
+                            c.get(Calendar.MINUTE),
+                            true
+                    ).show();
+                },
+                c.get(Calendar.YEAR),
+                c.get(Calendar.MONTH),
+                c.get(Calendar.DAY_OF_MONTH)
+        ).show();
     }
 
-    private void updateStatus(Appointment appt, String newStatus) {
-        repo.updateStatus(appt.getPatientId(), appt.getId(), newStatus,
-                new AppointmentRepository.Callback<Void>() {
-                    @Override public void onSuccess(Void data) {
-                        Toast.makeText(requireContext(),
-                                "Appointment " + newStatus,
-                                Toast.LENGTH_SHORT).show();
-                        refreshAppointments();
-                    }
-                    @Override public void onError(Throwable t) {
-                        Toast.makeText(requireContext(),
-                                "Update failed: " + t.getMessage(),
-                                Toast.LENGTH_LONG).show();
-                    }
-                }
-        );
-    }
-
-    private void refreshAppointments() {
-        repo.fetchAllAppointments(new AppointmentRepository.Callback<List<Appointment>>() {
-            @Override public void onSuccess(List<Appointment> data) {
-                adapter.setItems(data);
-            }
-            @Override public void onError(Throwable t) {
-                Log.e(TAG, "Error reloading appointments", t);
-            }
-        });
+    private String getStringResource(String key, String arg) {
+        int id = getResources().getIdentifier(key, "string", requireContext().getPackageName());
+        return id==0?key:getString(id, arg);
     }
 }

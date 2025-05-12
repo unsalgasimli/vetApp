@@ -39,7 +39,6 @@ public class AdminActivity extends AppCompatActivity {
             return true;
         });
 
-        // Load the Patients tab by default
         if (savedInstanceState == null) {
             bottomNavigationView.setSelectedItemId(R.id.nav_patient);
         }

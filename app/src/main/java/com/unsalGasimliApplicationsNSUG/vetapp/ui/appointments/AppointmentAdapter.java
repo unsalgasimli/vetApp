@@ -1,19 +1,13 @@
-// File: app/src/main/java/com/unsalGasimliApplicationsNSUG/vetapp/ui/appointments/AppointmentAdapter.java
 package com.unsalGasimliApplicationsNSUG.vetapp.ui.appointments;
 
-import android.text.format.DateFormat;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.view.*;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-import com.google.firebase.Timestamp;
 import com.unsalGasimliApplicationsNSUG.vetapp.R;
 import com.unsalGasimliApplicationsNSUG.vetapp.data.model.Appointment;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 public class AppointmentAdapter
         extends RecyclerView.Adapter<AppointmentAdapter.VH> {
@@ -23,9 +17,10 @@ public class AppointmentAdapter
     private final List<Appointment> items = new ArrayList<>();
     private final OnClick listener;
 
-    public AppointmentAdapter(OnClick l) {
-        this.listener = l;
+    public AppointmentAdapter(OnClick listener) {
+        this.listener = listener;
     }
+
 
     public void setItems(List<Appointment> data) {
         items.clear();
@@ -33,42 +28,42 @@ public class AppointmentAdapter
         notifyDataSetChanged();
     }
 
-    @NonNull @Override
-    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        return new VH(LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_appointment, parent, false));
+
+    public List<Appointment> getItems() {
+        return items;
     }
 
-    @Override public void onBindViewHolder(@NonNull VH h, int position) {
-        Appointment a = items.get(position);
-        h.txtType.setText(a.getType());
-        h.txtCounterparty.setText(a.getDoctorName());
+    @NonNull @Override
+    public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        View v = LayoutInflater.from(parent.getContext())
+                .inflate(R.layout.item_appointment, parent, false);
+        return new VH(v);
+    }
 
-        Timestamp ts = a.getDateTime();
-        if (ts != null) {
-            Date date = ts.toDate();
-            String formatted = DateFormat.format("yyyy-MM-dd HH:mm", date).toString();
-            h.txtDate.setText(formatted);
-        } else {
-            h.txtDate.setText("");
+    @Override
+    public void onBindViewHolder(@NonNull VH h, int pos) {
+        Appointment a = items.get(pos);
+        h.name.setText(a.getPatientName());
+
+        String dt = "";
+        if (a.getDateTime() != null) {
+            dt = new SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.getDefault())
+                    .format(a.getDateTime().toDate());
         }
-
+        h.date.setText(dt);
+        h.status.setText(a.getStatus());
         h.itemView.setOnClickListener(v -> listener.onClick(a));
     }
 
-    @Override public int getItemCount() {
-        return items.size();
-    }
+    @Override public int getItemCount() { return items.size(); }
 
     static class VH extends RecyclerView.ViewHolder {
-        TextView txtType, txtCounterparty, txtDate,txtStatus;
-        VH(@NonNull View v) {
-            super(v);
-            txtType         = v.findViewById(R.id.txtType);
-            txtCounterparty = v.findViewById(R.id.txtCounterparty);
-            txtDate         = v.findViewById(R.id.txtDate);
-            txtStatus       = v.findViewById(R.id.txtStatus);
-
+        final TextView name, date, status;
+        VH(@NonNull View itemView) {
+            super(itemView);
+            name   = itemView.findViewById(R.id.textPatientName);
+            date   = itemView.findViewById(R.id.textDateTime);
+            status = itemView.findViewById(R.id.textStatus);
         }
     }
 }

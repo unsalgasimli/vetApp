@@ -1,140 +1,116 @@
-// File: app/src/main/java/com/unsalGasimliApplicationsNSUG/vetapp/data/PrescriptionRepository.java
 package com.unsalGasimliApplicationsNSUG.vetapp.data.repository;
 
-import androidx.annotation.NonNull;
-
-import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.Query;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.*;
 import com.unsalGasimliApplicationsNSUG.vetapp.data.model.Prescription;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class PrescriptionRepository {
+    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
+
     public interface Callback<T> {
         void onSuccess(T data);
         void onError(Throwable t);
     }
 
-    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-    public void create(@NonNull Prescription p,
-                       @NonNull Callback<Void> cb) {
-        CollectionReference col = db
-                .collection("users")
-                .document(p.getPatientId())
+    private CollectionReference prescriptionsOf(String patientId) {
+        return db.collection("users")
+                .document(patientId)
                 .collection("prescriptions");
-        DocumentReference docRef = col.document();
-        p.setId(docRef.getId());
-        docRef.set(p)
-                .addOnSuccessListener(__ -> cb.onSuccess(null))
-                .addOnFailureListener(cb::onError);
     }
 
-
-    public void fetchForPatient(@NonNull String patientId,
-                                @NonNull Callback<List<Prescription>> cb) {
-        db.collection("users")
-                .document(patientId)
-                .collection("prescriptions")
-                .orderBy("dateTimestamp", Query.Direction.ASCENDING)
-                .get()
-                .addOnSuccessListener((QuerySnapshot qs) -> {
-                    List<Prescription> list = new ArrayList<>();
-                    for (QueryDocumentSnapshot doc : qs) {
-                        Prescription p = doc.toObject(Prescription.class);
-                        p.setId(doc.getId());
-                        list.add(p);
-                    }
-                    cb.onSuccess(list);
-                })
-                .addOnFailureListener(cb::onError);
-    }
-
-
-    public void fetchForDoctor(@NonNull String doctorId,
-                               @NonNull Callback<List<Prescription>> cb) {
+    public void fetchAllPrescriptions(Callback<List<Prescription>> cb) {
         db.collectionGroup("prescriptions")
-                .whereEqualTo("doctorId", doctorId)
-                .orderBy("dateTimestamp", Query.Direction.ASCENDING)
                 .get()
-                .addOnSuccessListener((QuerySnapshot qs) -> {
-                    List<Prescription> list = new ArrayList<>();
+                .addOnSuccessListener(qs -> {
+                    List<Prescription> all = new ArrayList<>();
                     for (QueryDocumentSnapshot doc : qs) {
                         Prescription p = doc.toObject(Prescription.class);
+                        String patientId = doc.getReference()
+                                .getParent()
+                                .getParent()
+                                .getId();
+                        p.setPatientId(patientId);
                         p.setId(doc.getId());
-                        list.add(p);
+                        all.add(p);
                     }
-                    cb.onSuccess(list);
+                    cb.onSuccess(all);
                 })
                 .addOnFailureListener(cb::onError);
     }
 
-
-    public void fetchAllPrescriptions(@NonNull Callback<List<Prescription>> cb) {
-        db.collectionGroup("prescriptions")
-                .orderBy("dateTimestamp", Query.Direction.ASCENDING)
-                .get()
-                .addOnSuccessListener((QuerySnapshot qs) -> {
-                    List<Prescription> list = new ArrayList<>();
-                    for (QueryDocumentSnapshot doc : qs) {
-                        Prescription p = doc.toObject(Prescription.class);
-                        p.setId(doc.getId());
-                        list.add(p);
-                    }
-                    cb.onSuccess(list);
-                })
-                .addOnFailureListener(cb::onError);
-    }
-
-
-    public void deletePrescription(@NonNull String patientId,
-                                   @NonNull String prescriptionId,
-                                   @NonNull Callback<Void> cb) {
-        db.collection("users")
-                .document(patientId)
-                .collection("prescriptions")
-                .document(prescriptionId)
-                .delete()
-                .addOnSuccessListener(__ -> cb.onSuccess(null))
-                .addOnFailureListener(cb::onError);
-    }
-
-    public void updatePrescription(@NonNull Prescription p,
-                                   @NonNull Callback<Void> cb) {
-        db.collection("users")
-                .document(p.getPatientId())
-                .collection("prescriptions")
-                .document(p.getId())
-                .set(p)
-                .addOnSuccessListener(__ -> cb.onSuccess(null))
-                .addOnFailureListener(cb::onError);
-    }
-
-
-
-
-
-    public void fetchById(@NonNull String patientId,
-                          @NonNull String prescriptionId,
-                          @NonNull Callback<Prescription> cb) {
-        db.collection("users")
-                .document(patientId)
-                .collection("prescriptions")
-                .document(prescriptionId)
+    public void fetchById(String patientId, String prescId, Callback<Prescription> cb) {
+        prescriptionsOf(patientId)
+                .document(prescId)
                 .get()
                 .addOnSuccessListener(doc -> {
-                    if (doc.exists()) {
-                        Prescription p = doc.toObject(Prescription.class);
-                        cb.onSuccess(p);
-                    } else {
-                        cb.onError(new IllegalArgumentException("No such prescription"));
+                    Prescription p = doc.toObject(Prescription.class);
+                    if (p != null) {
+                        p.setId(doc.getId());
+                        p.setPatientId(patientId);
                     }
+                    cb.onSuccess(p);
                 })
                 .addOnFailureListener(cb::onError);
+    }
+
+    public void fetchForPatient(String patientId, Callback<List<Prescription>> cb) {
+        prescriptionsOf(patientId)
+                .get()
+                .addOnSuccessListener(qs -> {
+                    List<Prescription> list = new ArrayList<>();
+                    for (QueryDocumentSnapshot doc : qs) {
+                        Prescription p = doc.toObject(Prescription.class);
+                        p.setId(doc.getId());
+                        p.setPatientId(patientId);
+                        list.add(p);
+                    }
+                    cb.onSuccess(list);
+                })
+                .addOnFailureListener(cb::onError);
+    }
+
+    public void create(Prescription p, Callback<Void> cb) {
+        DocumentReference ref = prescriptionsOf(p.getPatientId()).document();
+        p.setId(ref.getId());
+        ref.set(p)
+                .addOnSuccessListener(aVoid -> cb.onSuccess(null))
+                .addOnFailureListener(cb::onError);
+    }
+
+    public void updatePrescription(Prescription p, Callback<Void> cb) {
+        prescriptionsOf(p.getPatientId())
+                .document(p.getId())
+                .set(p, SetOptions.merge())
+                .addOnSuccessListener(aVoid -> cb.onSuccess(null))
+                .addOnFailureListener(cb::onError);
+    }
+
+    public void deletePrescription(String patientId, String prescId, Callback<Void> cb) {
+        prescriptionsOf(patientId)
+                .document(prescId)
+                .delete()
+                .addOnSuccessListener(aVoid -> cb.onSuccess(null))
+                .addOnFailureListener(cb::onError);
+    }
+
+    public Task<Void> create(Prescription p) {
+        DocumentReference ref = prescriptionsOf(p.getPatientId()).document();
+        p.setId(ref.getId());
+        return ref.set(p);
+    }
+
+    public Task<Void> update(Prescription p) {
+        return prescriptionsOf(p.getPatientId())
+                .document(p.getId())
+                .set(p, SetOptions.merge());
+    }
+
+    public Task<Void> delete(String patientId, String prescId) {
+        return prescriptionsOf(patientId)
+                .document(prescId)
+                .delete();
     }
 }

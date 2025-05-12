@@ -1,85 +1,66 @@
+// File: app/src/main/java/com/unsalGasimliApplicationsNSUG/vetapp/ui/patient/PatientAdapter.java
 package com.unsalGasimliApplicationsNSUG.vetapp.ui.patient;
 
 import android.view.LayoutInflater;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.DiffUtil;
+import androidx.recyclerview.widget.ListAdapter;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.unsalGasimliApplicationsNSUG.vetapp.R;
 import com.unsalGasimliApplicationsNSUG.vetapp.data.model.Patient;
+import com.unsalGasimliApplicationsNSUG.vetapp.databinding.ItemPatientBinding;
 
-import java.util.ArrayList;
-import java.util.List;
+public class PatientAdapter
+        extends ListAdapter<Patient, PatientAdapter.VH> {
 
-/**
- * Adapter for displaying a list of Patient objects.
- */
-public class PatientAdapter extends RecyclerView.Adapter<PatientAdapter.VH> {
     public interface OnItemClickListener {
-        void onItemClick(@NonNull Patient patient);
+        void onClick(Patient p);
     }
 
-    private final List<Patient> patients = new ArrayList<>();
-    @Nullable private OnItemClickListener listener;
+    private final OnItemClickListener listener;
 
-    public PatientAdapter(@Nullable List<Patient> initial) {
-        if (initial != null) patients.addAll(initial);
+    public PatientAdapter(OnItemClickListener listener) {
+        super(DIFF);
+        this.listener = listener;
     }
 
-    public void setPatients(@NonNull List<Patient> newList) {
-        patients.clear();
-        patients.addAll(newList);
-        notifyDataSetChanged();
-    }
-
-    public void setOnItemClickListener(@Nullable OnItemClickListener l) {
-        listener = l;
-    }
+    private static final DiffUtil.ItemCallback<Patient> DIFF =
+            new DiffUtil.ItemCallback<Patient>() {
+                @Override
+                public boolean areItemsTheSame(@NonNull Patient a, @NonNull Patient b) {
+                    return a.getUniqueId().equals(b.getUniqueId());
+                }
+                @Override
+                public boolean areContentsTheSame(@NonNull Patient a, @NonNull Patient b) {
+                    return a.equals(b);
+                }
+            };
 
     @NonNull @Override
     public VH onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_patient, parent, false);
-        return new VH(v);
+        ItemPatientBinding b = ItemPatientBinding.inflate(
+                LayoutInflater.from(parent.getContext()),
+                parent,
+                false
+        );
+        return new VH(b);
     }
 
     @Override
     public void onBindViewHolder(@NonNull VH holder, int pos) {
-        Patient p = patients.get(pos);
-        // Bind all fields
-        holder.name.setText(p.getFirstName() + " " + p.getLastName());
-        holder.email.setText(p.getEmail());
-        holder.phone.setText(p.getPhone());
-        holder.dob.setText(p.getDob());
-
-        // Set click listener
-        if (listener != null) {
-            holder.itemView.setOnClickListener(v -> listener.onItemClick(p));
-        } else {
-            holder.itemView.setOnClickListener(null);
-        }
-    }
-
-    @Override public int getItemCount() {
-        return patients.size();
+        Patient p = getItem(pos);
+        holder.binding.tvName .setText(p.getFirstName() + " " + p.getLastName());
+        holder.binding.tvEmail.setText(p.getEmail());
+        holder.binding.getRoot().setOnClickListener(v -> listener.onClick(p));
     }
 
     static class VH extends RecyclerView.ViewHolder {
-        final TextView name;
-        final TextView email;
-        final TextView phone;
-        final TextView dob;
-
-        VH(View itemView) {
-            super(itemView);
-            name  = itemView.findViewById(R.id.tvName);
-            email = itemView.findViewById(R.id.tvEmail);
-            phone = itemView.findViewById(R.id.tvPhone);
-            dob   = itemView.findViewById(R.id.tvDob);
+        final ItemPatientBinding binding;
+        VH(ItemPatientBinding b) {
+            super(b.getRoot());
+            binding = b;
         }
     }
 }

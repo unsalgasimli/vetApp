@@ -1,214 +1,103 @@
+// File: app/src/main/java/com/unsalGasimliApplicationsNSUG/vetapp/ui/patient/ManagePatientFragment.java
 package com.unsalGasimliApplicationsNSUG.vetapp.ui.patient;
 
 import android.os.Bundle;
-import android.text.TextUtils;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.Timestamp;
-import com.google.firebase.auth.AuthResult;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.unsalGasimliApplicationsNSUG.vetapp.R;
 import com.unsalGasimliApplicationsNSUG.vetapp.data.model.Patient;
-
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import com.unsalGasimliApplicationsNSUG.vetapp.databinding.FragmentManagePatientBinding;
 
 public class ManagePatientFragment extends Fragment {
-    private TextInputEditText etFirstName, etLastName, etEmail, etPassword, etPhone, etDOB;
-    private MaterialButton btnAction, btnDelete;
-    private RecyclerView rvPatients;
-    private PatientAdapter adapter;
+    private FragmentManagePatientBinding binding;
+    private ManagePatientViewModel      vm;
+    private PatientAdapter              adapter;
+    private String                      selectedId;
 
-    private final FirebaseFirestore db = FirebaseFirestore.getInstance();
-    private final FirebaseAuth mAuth = FirebaseAuth.getInstance();
-    private String selectedId = null;
+    public ManagePatientFragment() {
+        super(R.layout.fragment_manage_patient);
+    }
 
-    @Nullable @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            ViewGroup container,
-            Bundle savedInstanceState
-    ) {
-        View v = inflater.inflate(R.layout.fragment_manage_patient, container, false);
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        binding = FragmentManagePatientBinding.bind(view);
+        vm      = new ViewModelProvider(this).get(ManagePatientViewModel.class);
 
-        etFirstName = v.findViewById(R.id.etFirstName);
-        etLastName  = v.findViewById(R.id.etLastName);
-        etEmail     = v.findViewById(R.id.etEmail);
-        etPassword  = v.findViewById(R.id.etPassword);
-        etPhone     = v.findViewById(R.id.etPhone);
-        etDOB       = v.findViewById(R.id.etDOB);
-        btnAction   = v.findViewById(R.id.btnAction);
-        btnDelete   = v.findViewById(R.id.btnDeletePatient);
-        rvPatients  = v.findViewById(R.id.rvPatients);
-
-        adapter = new PatientAdapter(new ArrayList<>());
-        rvPatients.setLayoutManager(new LinearLayoutManager(getContext()));
-        rvPatients.setAdapter(adapter);
-
-        adapter.setOnItemClickListener(p -> {
+        adapter = new PatientAdapter(p -> {
             selectedId = p.getUniqueId();
-            etFirstName.setText(p.getFirstName());
-            etLastName .setText(p.getLastName());
-            etEmail    .setText(p.getEmail());
-            etPassword .setText("");
-            etPhone    .setText(p.getPhone());
-            etDOB      .setText(p.getDob());
+            binding.etFirstName .setText(p.getFirstName());
+            binding.etLastName  .setText(p.getLastName());
+            binding.etEmail     .setText(p.getEmail());
+            binding.etPassword  .setText("");
+            binding.etPhone     .setText(p.getPhone());
+            binding.etDOB       .setText(p.getDob());
+            binding.btnAction   .setText(R.string.action_update_patient);
+            binding.btnDeletePatient   .setVisibility(View.VISIBLE);
+        });
+        binding.rvPatients.setLayoutManager(new LinearLayoutManager(requireContext()));
+        binding.rvPatients.setAdapter(adapter);
 
-            btnAction.setText(R.string.action_update_patient);
-            btnDelete.setVisibility(View.VISIBLE);
+        vm.getPatients().observe(getViewLifecycleOwner(), list -> {
+            adapter.submitList(list);
+        });
+        vm.getMessage().observe(getViewLifecycleOwner(), msg -> {
+            if (msg != null) {
+                String[] parts = msg.split(":", 2);
+                String key     = parts[0];
+                String arg     = parts.length>1 ? parts[1] : "";
+                Toast.makeText(
+                        requireContext(),
+                        getStringResource(key, arg),
+                        Toast.LENGTH_SHORT
+                ).show();
+                vm.clearMessage();
+            }
         });
 
-        btnAction.setOnClickListener(__ -> {
-            if (selectedId == null) createPatient();
-            else                    updatePatient();
+
+
+        binding.btnAction.setOnClickListener(v -> {
+            Patient p = new Patient();
+            p.setUniqueId(selectedId);
+            p.setFirstName(binding.etFirstName.getText().toString().trim());
+            p.setLastName(binding.etLastName.getText().toString().trim());
+            p.setEmail(binding.etEmail.getText().toString().trim());
+            p.setPhone(binding.etPhone.getText().toString().trim());
+            p.setDob(binding.etDOB.getText().toString().trim());
+            if (selectedId == null) {
+                vm.createPatient(p, binding.etPassword.getText().toString().trim());
+            } else {
+                vm.updatePatient(p);
+            }
         });
-        btnDelete.setOnClickListener(__ -> deletePatient());
+        binding.btnDeletePatient.setOnClickListener(v -> {
+            if (selectedId != null) vm.deletePatient(selectedId);
+        });
 
         resetForm();
-        loadPatients();
-        return v;
-    }
-
-    private void createPatient() {
-        String first    = etFirstName.getText().toString().trim();
-        String last     = etLastName .getText().toString().trim();
-        String email    = etEmail    .getText().toString().trim();
-        String password = etPassword .getText().toString().trim();
-        String phone    = etPhone    .getText().toString().trim();
-        String dob      = etDOB      .getText().toString().trim();
-
-        if (TextUtils.isEmpty(first) || TextUtils.isEmpty(last) ||
-                TextUtils.isEmpty(email) || TextUtils.isEmpty(password) ||
-                TextUtils.isEmpty(phone) || TextUtils.isEmpty(dob)) {
-            Toast.makeText(getContext(), "Fill all fields", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnSuccessListener((AuthResult auth) -> {
-                    String uid = auth.getUser().getUid();
-                    Map<String,Object> data = new HashMap<>();
-
-
-                    data.put("firstName",   first);
-                    data.put("lastName",    last);
-                    data.put("email",       email);
-                    data.put("phone",       phone);
-                    data.put("dob",         dob);
-                    data.put("role",        "patient");
-                    data.put("registeredAt", Timestamp.now());
-
-                    db.collection("users").document(uid)
-                            .set(data)
-                            .addOnSuccessListener(__ -> {
-                                Toast.makeText(getContext(), "Patient added", Toast.LENGTH_SHORT).show();
-                                resetForm();
-                                loadPatients();
-                            })
-                            .addOnFailureListener(err ->
-                                    Toast.makeText(getContext(),
-                                            "Firestore failed: " + err.getMessage(),
-                                            Toast.LENGTH_LONG).show()
-                            );
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(getContext(),
-                                "Auth failed: " + e.getMessage(),
-                                Toast.LENGTH_LONG).show()
-                );
-    }
-
-    private void updatePatient() {
-        String first = etFirstName.getText().toString().trim();
-        String last  = etLastName .getText().toString().trim();
-        String email = etEmail    .getText().toString().trim();
-        String phone = etPhone    .getText().toString().trim();
-        String dob   = etDOB      .getText().toString().trim();
-
-        if (TextUtils.isEmpty(first) || TextUtils.isEmpty(last) ||
-                TextUtils.isEmpty(email) || TextUtils.isEmpty(phone) ||
-                TextUtils.isEmpty(dob)) {
-            Toast.makeText(getContext(), "Fill all fields", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        Map<String,Object> upd = new HashMap<>();
-        upd.put("firstName", first);
-        upd.put("lastName",  last);
-        upd.put("email",     email);
-        upd.put("phone",     phone);
-        upd.put("dob",       dob);
-
-        db.collection("users").document(selectedId)
-                .update(upd)
-                .addOnSuccessListener(__ -> {
-                    Toast.makeText(getContext(), "Patient updated", Toast.LENGTH_SHORT).show();
-                    resetForm();
-                    loadPatients();
-                })
-                .addOnFailureListener(err ->
-                        Toast.makeText(getContext(),
-                                "Update failed: " + err.getMessage(),
-                                Toast.LENGTH_LONG).show()
-                );
-    }
-
-    private void deletePatient() {
-        if (selectedId == null) return;
-        db.collection("users").document(selectedId)
-                .delete()
-                .addOnSuccessListener(__ -> {
-                    Toast.makeText(getContext(), "Patient deleted", Toast.LENGTH_SHORT).show();
-                    resetForm();
-                    loadPatients();
-                })
-                .addOnFailureListener(err ->
-                        Toast.makeText(getContext(),
-                                "Delete failed: " + err.getMessage(),
-                                Toast.LENGTH_LONG).show()
-                );
-    }
-
-    private void loadPatients() {
-        db.collection("users")
-                .whereEqualTo("role", "patient")
-                .get()
-                .addOnSuccessListener(snap -> {
-                    List<Patient> list = new ArrayList<>();
-                    for (QueryDocumentSnapshot doc : snap) {
-                        Patient p = doc.toObject(Patient.class);
-                        p.setUniqueId(doc.getId());
-                        list.add(p);
-                    }
-                    adapter.setPatients(list);
-                });
     }
 
     private void resetForm() {
         selectedId = null;
-        etFirstName.getText().clear();
-        etLastName .getText().clear();
-        etEmail    .getText().clear();
-        etPassword .getText().clear();
-        etPhone    .getText().clear();
-        etDOB      .getText().clear();
+        binding.etFirstName .getText().clear();
+        binding.etLastName  .getText().clear();
+        binding.etEmail     .getText().clear();
+        binding.etPassword  .getText().clear();
+        binding.etPhone     .getText().clear();
+        binding.etDOB       .getText().clear();
+        binding.btnAction   .setText(R.string.action_add_patient);
+        binding.btnDeletePatient   .setVisibility(View.GONE);
+    }
 
-        btnAction.setText(R.string.action_add_patient);
-        btnDelete.setVisibility(View.GONE);
+    private String getStringResource(String key, String arg) {
+        int id = getResources().getIdentifier(key, "string", requireContext().getPackageName());
+        return id==0 ? key : getString(id, arg);
     }
 }

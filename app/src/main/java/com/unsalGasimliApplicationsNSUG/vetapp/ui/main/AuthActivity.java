@@ -14,7 +14,7 @@ public class AuthActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_auth);
 
-        // Show LoginFragment by default
+
         replaceFragment(new LoginFragment());
     }
 

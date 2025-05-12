@@ -1,8 +1,11 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- File: app/src/main/res/layout/item_appointment.xml -->
 <androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_margin="8dp">
+    android:layout_margin="8dp"
+    card:cardCornerRadius="8dp"
+    card:cardElevation="4dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -11,32 +14,25 @@
         android:padding="12dp">
 
         <TextView
-            android:id="@+id/txtType"
+            android:id="@+id/textPatientName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textStyle="bold" />
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Subtitle1" />
 
         <TextView
-            android:id="@+id/txtCounterparty"
+            android:id="@+id/textDateTime"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="4dp"
-            android:textSize="14sp" />
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2" />
 
         <TextView
-            android:id="@+id/txtDate"
+            android:id="@+id/textStatus"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textSize="14sp" />
+            android:layout_marginTop="4dp"
+            android:textAppearance="@style/TextAppearance.MaterialComponents.Body2"
+            android:textColor="?attr/colorPrimary" />
 
-
-        <TextView
-            android:id="@+id/txtStatus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="2dp"
-            android:textSize="14sp" />
     </LinearLayout>
 </androidx.cardview.widget.CardView>

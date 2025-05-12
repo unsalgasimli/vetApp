@@ -46,7 +46,7 @@ public class LoginFragment extends Fragment {
 
         loginButton.setOnClickListener(v -> attemptLogin());
         registerButton.setOnClickListener(v -> {
-            // delegate to AuthActivity to swap in the RegisterFragment
+
             if (getActivity() instanceof com.unsalGasimliApplicationsNSUG.vetapp.ui.main.AuthActivity) {
                 ((com.unsalGasimliApplicationsNSUG.vetapp.ui.main.AuthActivity) getActivity()).showRegister();
             }

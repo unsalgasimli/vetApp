@@ -11,57 +11,44 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import com.google.android.material.button.MaterialButton;
-import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.unsalGasimliApplicationsNSUG.vetapp.R;
+import com.unsalGasimliApplicationsNSUG.vetapp.databinding.FragmentPatientDataBinding;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class PatientDataFragment extends Fragment {
-
-    private TextInputEditText etFirst, etLast, etPhone, etDOB, etEmail;
-    private MaterialButton btnSave;
+    private FragmentPatientDataBinding binding;
     private FirebaseFirestore db;
     private String uid;
 
-    @Nullable @Override
-    public View onCreateView(
-            @NonNull LayoutInflater inflater,
-            @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState
-    ) {
-        View v = inflater.inflate(R.layout.fragment_patient_data, container, false);
+    @Nullable
+    @Override
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
+        binding = FragmentPatientDataBinding.inflate(inflater, container, false);
+        return binding.getRoot();
+    }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
 
         db = FirebaseFirestore.getInstance();
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         if (user == null) {
-            Toast.makeText(getContext(), "User not logged in", Toast.LENGTH_SHORT).show();
-            return v;
+            Toast.makeText(requireContext(), R.string.user_not_logged_in, Toast.LENGTH_SHORT).show();
+            return;
         }
         uid = user.getUid();
 
-
-        etFirst = v.findViewById(R.id.etFirstName);
-        etLast  = v.findViewById(R.id.etLastName);
-        etPhone = v.findViewById(R.id.etPhone);
-        etDOB   = v.findViewById(R.id.etDOB);
-        etEmail = v.findViewById(R.id.etEmail);
-        btnSave = v.findViewById(R.id.btnSaveProfile);
-
-
         loadProfile();
-
-
-        btnSave.setOnClickListener(x -> saveProfile());
-
-        return v;
+        binding.btnSaveProfile.setOnClickListener(v -> saveProfile());
     }
 
     private void loadProfile() {
@@ -70,55 +57,53 @@ public class PatientDataFragment extends Fragment {
                 .get()
                 .addOnSuccessListener(doc -> {
                     if (!doc.exists()) {
-                        Toast.makeText(getContext(), "Profile data missing", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(requireContext(), R.string.profile_data_missing, Toast.LENGTH_SHORT).show();
                         return;
                     }
-                    etFirst.setText(doc.getString("firstName"));
-                    etLast .setText(doc.getString("lastName"));
-                    etPhone.setText(doc.getString("phone"));
-                    etDOB  .setText(doc.getString("dob"));
-                    etEmail.setText(doc.getString("email"));
+                    binding.etFirstName.setText(doc.getString("firstName"));
+                    binding.etLastName.setText(doc.getString("lastName"));
+                    binding.etPhone.setText(doc.getString("phone"));
+                    binding.etDOB.setText(doc.getString("dob"));
+                    binding.etEmail.setText(doc.getString("email"));
                 })
                 .addOnFailureListener(e ->
-                        Toast.makeText(getContext(),
-                                "Failed to load: " + e.getMessage(),
-                                Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), getString(R.string.load_failed, e.getMessage()), Toast.LENGTH_LONG).show()
                 );
     }
 
     private void saveProfile() {
-        String first = etFirst.getText().toString().trim();
-        String last  = etLast .getText().toString().trim();
-        String phone = etPhone.getText().toString().trim();
-        String dob   = etDOB  .getText().toString().trim();
+        String first = binding.etFirstName.getText().toString().trim();
+        String last = binding.etLastName.getText().toString().trim();
+        String phone = binding.etPhone.getText().toString().trim();
+        String dob = binding.etDOB.getText().toString().trim();
 
-        if (TextUtils.isEmpty(first)
-                || TextUtils.isEmpty(last)
-                || TextUtils.isEmpty(phone)
-                || TextUtils.isEmpty(dob)) {
-            Toast.makeText(getContext(),
-                    "Please fill all fields", Toast.LENGTH_SHORT).show();
+        if (TextUtils.isEmpty(first) || TextUtils.isEmpty(last)
+                || TextUtils.isEmpty(phone) || TextUtils.isEmpty(dob)) {
+            Toast.makeText(requireContext(), R.string.fill_all_fields, Toast.LENGTH_SHORT).show();
             return;
         }
 
-        Map<String,Object> upd = new HashMap<>();
+        Map<String, Object> upd = new HashMap<>();
         upd.put("firstName", first);
-        upd.put("lastName",  last);
-        upd.put("phone",     phone);
-        upd.put("dob",       dob);
+        upd.put("lastName", last);
+        upd.put("phone", phone);
+        upd.put("dob", dob);
         upd.put("updatedAt", Timestamp.now());
 
         db.collection("users")
                 .document(uid)
                 .update(upd)
-                .addOnSuccessListener(v ->
-                        Toast.makeText(getContext(),
-                                "Profile saved", Toast.LENGTH_SHORT).show()
+                .addOnSuccessListener(aVoid ->
+                        Toast.makeText(requireContext(), R.string.profile_saved, Toast.LENGTH_SHORT).show()
                 )
                 .addOnFailureListener(e ->
-                        Toast.makeText(getContext(),
-                                "Save failed: " + e.getMessage(),
-                                Toast.LENGTH_LONG).show()
+                        Toast.makeText(requireContext(), getString(R.string.save_failed, e.getMessage()), Toast.LENGTH_LONG).show()
                 );
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        binding = null;
     }
 }

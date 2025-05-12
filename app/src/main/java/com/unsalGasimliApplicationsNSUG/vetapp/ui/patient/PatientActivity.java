@@ -7,43 +7,47 @@ import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.unsalGasimliApplicationsNSUG.vetapp.R;
+import com.unsalGasimliApplicationsNSUG.vetapp.databinding.ActivityPatientBinding;
 import com.unsalGasimliApplicationsNSUG.vetapp.ui.appointments.AppointmentFragment;
-import com.unsalGasimliApplicationsNSUG.vetapp.ui.appointments.AppointmentListFragment;
-import com.unsalGasimliApplicationsNSUG.vetapp.ui.prescriptions.PrescriptionFragment;
 import com.unsalGasimliApplicationsNSUG.vetapp.ui.prescriptions.PrescriptionListFragment;
-import com.unsalGasimliApplicationsNSUG.vetapp.ui.staff.AllPrescriptionsFragment;
-import com.unsalGasimliApplicationsNSUG.vetapp.ui.staff.PatientSelectionFragment;
 
 public class PatientActivity extends AppCompatActivity {
+    private ActivityPatientBinding binding;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_patient);
+        binding = ActivityPatientBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
 
-        BottomNavigationView nav = findViewById(R.id.bottomNavigationView);
-
+        BottomNavigationView nav = binding.bottomNavigationView;
         nav.setOnItemSelectedListener(item -> {
-            Fragment f;
+            Fragment selectedFragment;
             switch (item.getItemId()) {
                 case R.id.nav_appointments:
-                    f = new AppointmentFragment();
+                    selectedFragment = new AppointmentFragment();
                     break;
                 case R.id.nav_prescription:
-                    f = new PrescriptionListFragment();
+                    selectedFragment = new PrescriptionListFragment();
                     break;
                 default:
                     return false;
             }
             getSupportFragmentManager()
                     .beginTransaction()
-                    .replace(R.id.fragment_container, f)
+                    .replace(R.id.fragment_container, selectedFragment)
                     .commit();
             return true;
         });
 
-        // show the patients list by default:
         if (savedInstanceState == null) {
             nav.setSelectedItemId(R.id.nav_appointments);
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        binding = null;
     }
 }
