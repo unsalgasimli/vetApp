@@ -7,12 +7,11 @@ import android.os.Bundle;
 import android.text.format.DateFormat;
 import android.view.View;
 import android.widget.Toast;
-
-import androidx.annotation.*;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.*;
-
+import androidx.recyclerview.widget.LinearLayoutManager;
 import com.google.firebase.Timestamp;
 import com.unsalGasimliApplicationsNSUG.vetapp.R;
 import com.unsalGasimliApplicationsNSUG.vetapp.data.model.Appointment;
@@ -23,11 +22,10 @@ import com.unsalGasimliApplicationsNSUG.vetapp.ui.appointments.AppointmentViewMo
 import java.util.Calendar;
 import java.util.Date;
 
-
 public class AllAppointmentsFragment extends Fragment {
     private FragmentAppointmentsBinding binding;
-    private AppointmentViewModel        vm;
-    private AppointmentAdapter          adapter;
+    private AppointmentViewModel vm;
+    private AppointmentAdapter adapter;
 
     public AllAppointmentsFragment() {
         super(R.layout.fragment_appointments);
@@ -36,7 +34,9 @@ public class AllAppointmentsFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle s) {
         binding = FragmentAppointmentsBinding.bind(view);
-        vm      = new ViewModelProvider(this).get(AppointmentViewModel.class);
+        vm = new ViewModelProvider(this).get(AppointmentViewModel.class);
+
+        binding.fabAddAppointment.setVisibility(View.GONE);
 
         adapter = new AppointmentAdapter(this::showDecisionDialog);
         binding.recyclerAppointments.setLayoutManager(new LinearLayoutManager(requireContext()));
